@@ -184,4 +184,4 @@ This project is built on the **GeoGen** engine by [Patrik Bak](https://github.co
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the GNU Affero General Public License v3.0 — the same license as the original [GeoGen](https://github.com/PatrikBak/GeoGen) engine. See [LICENSE](LICENSE) for details.
