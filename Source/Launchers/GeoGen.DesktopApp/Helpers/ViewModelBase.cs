@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 namespace GeoGen.DesktopApp.Helpers;
 
 /// <summary>
-/// Base class for ViewModels implementing INotifyPropertyChanged.
+/// Base class for ViewModels providing INotifyPropertyChanged implementation.
 /// </summary>
-public class ViewModelBase : INotifyPropertyChanged
+public abstract class ViewModelBase : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -19,6 +19,7 @@ public class ViewModelBase : INotifyPropertyChanged
     {
         if (EqualityComparer<T>.Default.Equals(field, value))
             return false;
+
         field = value;
         OnPropertyChanged(propertyName);
         return true;

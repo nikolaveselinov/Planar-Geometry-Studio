@@ -1,50 +1,43 @@
 using Avalonia.Controls;
-using Avalonia.Threading;
+using Avalonia.Markup.Xaml;
 using GeoGen.DesktopApp.ViewModels;
-using System.ComponentModel;
 
 namespace GeoGen.DesktopApp.Views;
 
 public partial class MainWindow : Window
 {
-    private TextBox? _outputBox;
-
     public MainWindow()
     {
         InitializeComponent();
-    }
 
-    protected override void OnOpened(EventArgs e)
-    {
-        base.OnOpened(e);
-        _outputBox = this.FindControl<TextBox>("OutputBox");
+        var vm = new MainWindowViewModel(this);
+        DataContext = vm;
 
-        if (DataContext is MainWindowViewModel vm)
+        // Auto-scroll the output box when new text is appended
+        vm.PropertyChanged += (s, e) =>
         {
-            vm.PropertyChanged += OnViewModelPropertyChanged;
-        }
-    }
-
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(MainWindowViewModel.OutputText))
-        {
-            Dispatcher.UIThread.Post(() =>
+            if (e.PropertyName == nameof(MainWindowViewModel.OutputText))
             {
-                if (_outputBox != null)
+                var outputBox = this.FindControl<TextBox>("OutputBox");
+                if (outputBox != null)
                 {
-                    // Check if we should scroll to top (for help content) or bottom (for output)
-                    if (DataContext is MainWindowViewModel vm && vm.ScrollOutputToTop)
+                    if (vm.ScrollOutputToTop)
                     {
-                        _outputBox.CaretIndex = 0;
+                        outputBox.CaretIndex = 0;
                         vm.ScrollOutputToTop = false;
                     }
                     else
                     {
-                        _outputBox.CaretIndex = _outputBox.Text?.Length ?? 0;
+                        // Move caret to end to trigger auto-scroll
+                        outputBox.CaretIndex = outputBox.Text?.Length ?? 0;
                     }
                 }
-            }, DispatcherPriority.Background);
-        }
+            }
+        };
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

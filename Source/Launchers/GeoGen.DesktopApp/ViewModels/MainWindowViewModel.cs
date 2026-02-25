@@ -363,7 +363,7 @@ public class MainWindowViewModel : ViewModelBase
             }
 
             StatusText = _cts.IsCancellationRequested ? "Generation stopped" : "Generation complete!";
-            AppendOutput($"\n= Generation {(_cts.IsCancellationRequested ? "stopped" : "complete")} =\n");
+            AppendOutput($"\n{'='} Generation {(_cts.IsCancellationRequested ? "stopped" : "complete")} {'='}\n");
 
             // Show output location
             var jsonOutputDir = Path.Combine(outputDir, "JsonOutput");
@@ -1347,7 +1347,7 @@ public class MainWindowViewModel : ViewModelBase
         text.AppendLine("  SecondIntersectionOfTwoCircumcircles(A, B, C, D, E)");
         text.AppendLine("      Second intersection of circumcircles of ABC and ADE");
         text.AppendLine();
-        text.AppendLine("=== COMPOSED CONSTRUCTIONS (28) ===");
+        text.AppendLine("=== COMPOSED CONSTRUCTIONS (24) ===");
         text.AppendLine();
         text.AppendLine("  Centroid(A, B, C)                             Centroid of triangle ABC");
         text.AppendLine("  CircleWithDiameter(A, B)                      Circle with diameter AB");
@@ -1435,7 +1435,7 @@ public class MainWindowViewModel : ViewModelBase
         StatusText = "Reference displayed";
     }
 
-    private void ShowAbout()
+    private async void ShowAbout()
     {
         var aboutText =
             """

@@ -3,14 +3,14 @@ using System.Windows.Input;
 namespace GeoGen.DesktopApp.Helpers;
 
 /// <summary>
-/// A basic ICommand implementation that delegates to Action/Func delegates.
+/// A simple synchronous ICommand implementation.
 /// </summary>
 public class RelayCommand : ICommand
 {
     private readonly Action<object?> _execute;
-    private readonly Predicate<object?>? _canExecute;
+    private readonly Func<object?, bool>? _canExecute;
 
-    public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
+    public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecute = canExecute;
@@ -19,12 +19,14 @@ public class RelayCommand : ICommand
     public event EventHandler? CanExecuteChanged;
 
     public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
+
     public void Execute(object? parameter) => _execute(parameter);
+
     public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
 /// <summary>
-/// An async-aware ICommand that executes an async Task.
+/// An async ICommand implementation that prevents re-entrance and tracks execution state.
 /// </summary>
 public class AsyncRelayCommand : ICommand
 {
@@ -47,7 +49,10 @@ public class AsyncRelayCommand : ICommand
         if (_isExecuting) return;
         _isExecuting = true;
         RaiseCanExecuteChanged();
-        try { await _execute(); }
+        try
+        {
+            await _execute();
+        }
         finally
         {
             _isExecuting = false;
