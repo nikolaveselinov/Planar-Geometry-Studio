@@ -113,13 +113,20 @@ namespace GeoGen.DrawingLauncher
 
             #region Compiling
 
-            // Construct the command with parameters
-            var command = $"{_settings.MetapostCompilationCommand} \"{_settings.MetapostCodeFilePath}\"";
+            // Get the directory and file name of the MetaPost code file so that mpost runs
+            // from the same directory as the source file (needed for btex/etex processing)
+            var codeFileDirectory = Path.GetDirectoryName(_settings.MetapostCodeFilePath);
+            var codeFileName = Path.GetFileName(_settings.MetapostCodeFilePath);
+            var workingDirectory = string.IsNullOrEmpty(codeFileDirectory) ? null : Path.GetFullPath(codeFileDirectory);
 
-            // Run the compilation command
+            // Construct the command with parameters
+            var command = $"{_settings.MetapostCompilationCommand} \"{codeFileName}\"";
+
+            // Run the compilation command from the directory containing the MP file
             var (exitCode, output, errors) = await ProcessUtilities.RunCommandAsync(_settings.MetapostCompilationCommand,
-                // With the appended file path at the end
-                arguments: $"{_settings.MetapostCompilationArguments} \"{_settings.MetapostCodeFilePath}\"");
+                // With the appended file name (not full path) at the end
+                arguments: $"{_settings.MetapostCompilationArguments} \"{codeFileName}\"",
+                workingDirectory: workingDirectory);
 
             // If the error code is not OK, i.e. not zero, make aware
             if (exitCode != 0)
@@ -248,9 +255,12 @@ namespace GeoGen.DrawingLauncher
             // Switch based on the loose objects layout
             switch (configuration.LooseObjectsHolder.Layout)
             {
-                // Triangle and quadrilateral cases
+                // All point-based layout cases
+                case LooseObjectLayout.LineSegment:
                 case LooseObjectLayout.Triangle:
+                case LooseObjectLayout.RightTriangle:
                 case LooseObjectLayout.Quadrilateral:
+                case LooseObjectLayout.CyclicQuadrilateral:
 
                     // In these cases we have points
                     var points = looseObjects.Cast<Point>().ToArray();
@@ -264,6 +274,28 @@ namespace GeoGen.DrawingLauncher
                         .ForEach(pair => figure.AddSegment(pair.Item1, pair.Item2, ObjectDrawingStyle.NormalObject, shifted: false));
 
                     break;
+
+                // Line and point case: draw the line passing through the point
+                case LooseObjectLayout.LineAndPoint:
+                {
+                    var line = (Line)looseObjects[0];
+                    var point = (Point)looseObjects[1];
+                    figure.AddPoint(point, ObjectDrawingStyle.NormalObject);
+                    figure.AddLine(line, new[] { point }, ObjectDrawingStyle.NormalObject, shifted: false);
+                    break;
+                }
+
+                // Line and two points case: draw the line and both points
+                case LooseObjectLayout.LineAndTwoPoints:
+                {
+                    var line = (Line)looseObjects[0];
+                    var lp1 = (Point)looseObjects[1];
+                    var lp2 = (Point)looseObjects[2];
+                    figure.AddPoint(lp1, ObjectDrawingStyle.NormalObject);
+                    figure.AddPoint(lp2, ObjectDrawingStyle.NormalObject);
+                    figure.AddLine(line, new[] { lp1, lp2 }, ObjectDrawingStyle.NormalObject, shifted: false);
+                    break;
+                }
 
                 // Unhandled cases
                 default:

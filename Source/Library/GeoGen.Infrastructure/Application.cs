@@ -124,7 +124,7 @@ namespace GeoGen.MainLauncher
                 if (ShouldPauseBeforeExit())
                 {
                     Console.WriteLine("\nPress any key to exit...");
-                    Console.ReadKey();
+                    try { Console.ReadKey(); } catch { }
                 }
 
                 // A function to check if we should pause before exit

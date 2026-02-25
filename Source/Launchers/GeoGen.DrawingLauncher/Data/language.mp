@@ -15,6 +15,26 @@ def Quadrilateral_Text(expr A,B,C,D) =
 	"Let~$" & A & B & C & D & "$ be a~convex quadrilateral. "
 enddef;
 
+def CyclicQuadrilateral_Text(expr A,B,C,D) = 
+	"Let~$" & A & B & C & D & "$ be a~cyclic quadrilateral. "
+enddef;
+
+def RightTriangle_Text(expr A,B,C) = 
+	"Let~$" & A & B & C & "$ be a~triangle with~$\angle " & B & A & C & " = 90^\circ$. "
+enddef;
+
+def LineSegment_Text(expr A,B) = 
+	"Let~$" & A & "$ and~$" & B & "$ be two points. "
+enddef;
+
+def LineAndPoint_Text(expr l,P) = 
+	"Let~$" & l & "$ be a~line and~$" & P & "$ a~point not on~$" & l & "$. "
+enddef;
+
+def LineAndTwoPoints_Text(expr l,P,Q) = 
+	"Let~$" & l & "$ be a~line and~$" & P & "$,~$" & Q & "$ points not on~$" & l & "$. "
+enddef;
+
 %%%%%%%%%%%% CONSTRUCTIONS %%%%%%%%%%%%
 
 def Midpoint_Text(expr M,A,B) = 
@@ -136,6 +156,51 @@ enddef;
 def CircleWithDiameter_Text(expr c,A,B) = 
 	"Let~$" & c & "$ be the circle with a~diameter~$" & A & B & "$. "		
 enddef;
+
+def LineFromPoints_Text(expr l,A,B) = 
+	"Let~$" & l & "$ be the line through~$" & A & "$ and~$" & B & "$. "
+enddef;
+
+def Circumcircle_Text(expr c,A,B,C) = 
+	"Let~$" & c & "$ be the circumcircle of~$" & A & B & C & "$. "
+enddef;
+
+def CircleWithCenterThroughPoint_Text(expr c,O,P) = 
+	"Let~$" & c & "$ be the circle with center~$" & O & "$ passing through~$" & P & "$. "
+enddef;
+
+def CenterOfCircle_Text(expr O,c) = 
+	"Let~$" & O & "$ be the center of~$" & c & "$. "
+enddef;
+
+def SecondIntersectionOfTwoCircumcircles_Text(expr P,A,B,C,D,E) = 
+	"Let~$" & P & "$ be the second intersection of circles~$" & A & B & C & "$ and~$" & A & D & E & "$. "
+enddef;
+
+def SecondIntersectionOfCircleAndLineFromPoints_Text(expr P,A,B,C,D) = 
+	"Let~$" & P & "$ be the second intersection of line~$" & A & B & "$ and circle~$" & A & C & D & "$. "
+enddef;
+
+def IsoscelesTrapezoidPoint_Text(expr P,A,B,C) = 
+	"Let~$" & P & "$ be the reflection of~$" & A & "$ in the perpendicular bisector of~$" & B & C & "$. "
+enddef;
+
+def Centroid_Text(expr G,A,B,C) = 
+	"Let~$" & G & "$ be the centroid of~$" & A & B & C & "$. "
+enddef;
+
+def LineThroughCircumcenter_Text(expr l,A,B,C) = 
+	"Let~$" & l & "$ be the line through~$" & A & "$ and the circumcenter of~$" & A & B & C & "$. "
+enddef;
+
+def NinePointCircle_Text(expr c,A,B,C) = 
+	"Let~$" & c & "$ be the nine-point circle of~$" & A & B & C & "$. "
+enddef;
+
+def Midline_Text(expr l,A,B,C) = 
+	"Let~$" & l & "$ be the~$" & A & "$-midline of~$" & A & B & C & "$. "
+enddef;
+
 %%%%%%%%%%%% THEOREMS %%%%%%%%%%%%
 
 def EqualLineSegments_Text(expr k,l) =

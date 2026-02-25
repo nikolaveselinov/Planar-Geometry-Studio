@@ -68,8 +68,9 @@ namespace GeoGen.Constructor
 
                     break;
 
-                // Make sure no three points are collinear
+                // Make sure no three points are collinear (quadrilateral or cyclic)
                 case LooseObjectLayout.Quadrilateral:
+                case LooseObjectLayout.CyclicQuadrilateral:
 
                     // Get the points
                     var point1 = (Point)input[0];
@@ -83,6 +84,15 @@ namespace GeoGen.Constructor
                         AnalyticHelpers.AreCollinear(point1, point3, point4) ||
                         AnalyticHelpers.AreCollinear(point2, point3, point4))
                         // If some three are collinear, the construction shouldn't be possible
+                        return null;
+
+                    break;
+
+                // Right triangle: make sure the points are not collinear
+                case LooseObjectLayout.RightTriangle:
+
+                    // If yes, the construction shouldn't be possible
+                    if (AnalyticHelpers.AreCollinear((Point)input[0], (Point)input[1], (Point)input[2]))
                         return null;
 
                     break;

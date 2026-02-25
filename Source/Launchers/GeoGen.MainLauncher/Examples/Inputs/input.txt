@@ -1,0 +1,54 @@
+Constructions:
+
+ Centroid
+ CircleWithCenterThroughPoint
+ CircleWithDiameter
+ Circumcenter
+ Circumcircle
+ Excenter
+ Excircle
+ ExternalAngleBisector
+ Incenter
+ Incircle
+ InternalAngleBisector
+ IntersectionOfLineAndLineFromPoints
+ IntersectionOfLines
+ IntersectionOfLinesFromPoints
+ IsoscelesTrapezoidPoint
+ LineThroughCircumcenter
+ Median
+ Midline
+ Midpoint
+ MidpointOfArc
+ MidpointOfOppositeArc
+ NinePointCircle
+ OppositePointOnCircumcircle
+ Orthocenter
+ ParallelLine
+ ParallelLineToLineFromPoints
+ ParallelogramPoint
+ PerpendicularBisector
+ PerpendicularLine
+ PerpendicularLineAtPointOfLine
+ PerpendicularLineToLineFromPoints
+ PerpendicularProjection
+ PerpendicularProjectionOnLineFromPoints
+ PointReflection
+ ReflectionInLine
+ ReflectionInLineFromPoints
+ SecondIntersectionOfCircleAndLineFromPoints
+ SecondIntersectionOfTwoCircumcircles
+ TangentLine
+
+Initial configuration:
+
+ Triangle: A, B, C
+ D = Circumcenter(A, B, C)
+ E = Incenter(A, B, C)
+ F = Orthocenter(A, B, C)
+
+Iterations: 1
+MaximalPoints: 4
+MaximalLines: 4
+MaximalCircles: 3
+SymmetryGenerationMode: GenerateBothSymmetricAndAsymmetric

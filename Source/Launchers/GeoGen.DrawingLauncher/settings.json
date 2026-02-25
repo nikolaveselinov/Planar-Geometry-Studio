@@ -46,7 +46,7 @@
       },
       "TextMacro": "TexTextOnTheRight"
     },
-    "MetapostCodeFilePath": "figures.mp",
+    "MetapostCodeFilePath": "Data/figures.mp",
     "MetapostMacroLibraryPath": "macros.mp",
     "ConstructionTextMacroPrefix": "_Text",
     "RankingTableMacro": "RankingTable",

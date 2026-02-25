@@ -76,8 +76,11 @@ namespace GeoGen.DrawingLauncher
                     // Ask for the file
                     Console.Write("Enter the name of the file: ");
 
-                    // Get the file
-                    var path = Console.ReadLine().Trim();
+                    // Get the file (exit gracefully if stdin is exhausted)
+                    var path = Console.ReadLine();
+                    if (path == null)
+                        return;
+                    path = path.Trim();
 
                     // Empty line
                     Console.WriteLine();
@@ -127,8 +130,11 @@ namespace GeoGen.DrawingLauncher
                 // Ask for it
                 Console.Write("Enter the interval start-end (indexing from 1), or a single number, or 'q' for another file: ");
 
-                // Get the command
-                var command = Console.ReadLine().Trim();
+                // Get the command (exit gracefully if stdin is exhausted)
+                var commandLine = Console.ReadLine();
+                if (commandLine == null)
+                    return;
+                var command = commandLine.Trim();
 
                 // Empty line
                 Console.WriteLine();

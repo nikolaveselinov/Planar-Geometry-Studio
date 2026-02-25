@@ -14,7 +14,7 @@ namespace GeoGen.Utilities
         /// <param name="command">The command to be run.</param>
         /// <param name="arguments">The arguments of the command.</param>
         /// <returns>The exit code, the output from the command's output stream, the output from the command's error stream.</returns>
-        public static Task<(int exitCode, string outputData, string errorData)> RunCommandAsync(string command, string arguments)
+        public static Task<(int exitCode, string outputData, string errorData)> RunCommandAsync(string command, string arguments, string workingDirectory = null)
         {
             // Prepare the task that will indicate the end of the command and hold the data
             var taskCompletionSource = new TaskCompletionSource<(int exitCode, string output, string error)>();
@@ -35,7 +35,10 @@ namespace GeoGen.Utilities
                     RedirectStandardOutput = true,
 
                     // Redirect the errors
-                    RedirectStandardError = true
+                    RedirectStandardError = true,
+
+                    // Set the working directory, if specified
+                    WorkingDirectory = workingDirectory ?? ""
                 },
 
                 // This is needed for the exit event to be fired
