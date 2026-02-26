@@ -6,7 +6,7 @@ Planar Geometry Studio wraps GeoGen in an intuitive GUI that lets you:
 
 - **Write** input configurations in a built-in code editor
 - **Generate** geometry problems and ranked theorems with one click
-- **Render** publication-quality figures (EPS → PDF) via MetaPost
+- **Render** figures (EPS → PDF) via MetaPost
 - **Browse** results in human-readable and machine-readable formats
 
 ---
