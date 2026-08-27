@@ -55,7 +55,7 @@ public static partial class InputValidator
         return errors;
     }
 
-    private static void RequireSection(string input, string sectionName, ICollection<string> errors)
+    private static void RequireSection(string input, string sectionName, List<string> errors)
     {
         if (!Regex.IsMatch(input, $@"(?m)^\s*{Regex.Escape(sectionName)}\s*$"))
             errors.Add($"Missing '{sectionName}' section.");
