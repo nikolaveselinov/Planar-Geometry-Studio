@@ -6,7 +6,6 @@ on:
     branches: [master]
     paths:
       - VERSION
-      - CHANGELOG.md
 
 concurrency:
   group: release
