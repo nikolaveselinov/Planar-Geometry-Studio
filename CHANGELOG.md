@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.1] - 2026-08-27
+
+### Application
+
+- Fixed cancellation and child-process cleanup.
+- Prevented stale or empty PDFs from being reported as successful figure conversions.
+- Made run and figure workspaces collision-safe.
+- Fixed GeoGen tool discovery for RID-specific development builds.
+
+### Development
+
+- Desktop builds now treat warnings as errors and build with zero warnings.
+- Added regression tests for process lifecycle, redirected input, workspaces, and tool discovery.
+- Kept Fluent Assertions on the maintained open-source 7.x line.
+
 ## [1.1.0] - 2026-08-27
 
 ### Application
@@ -28,5 +43,6 @@
 
 - First desktop release.
 
+[1.1.1]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/tag/v1.0.0
