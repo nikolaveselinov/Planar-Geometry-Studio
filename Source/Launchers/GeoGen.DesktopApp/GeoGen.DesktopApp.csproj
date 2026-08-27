@@ -19,6 +19,7 @@
 		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

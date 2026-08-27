@@ -21,6 +21,8 @@ public sealed class ProcessRunner
         IEnumerable<string>? standardInputLines,
         CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var startInfo = new ProcessStartInfo
         {
             FileName = executablePath,
@@ -44,6 +46,7 @@ public sealed class ProcessRunner
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!process.Start())
                 throw new InvalidOperationException($"Could not start '{executablePath}'.");
 
@@ -52,28 +55,30 @@ public sealed class ProcessRunner
             var outputTask = ReadLinesAsync(process.StandardOutput, outputLines);
             var errorTask = ReadLinesAsync(process.StandardError, errorLines);
 
-            if (standardInputLines is not null)
-            {
-                foreach (var line in standardInputLines)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await process.StandardInput.WriteLineAsync(line);
-                }
-
-                process.StandardInput.Close();
-            }
-
             try
             {
+                if (standardInputLines is not null)
+                {
+                    foreach (var line in standardInputLines)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await process.StandardInput.WriteLineAsync(line);
+                    }
+
+                    process.StandardInput.Close();
+                }
+
                 await process.WaitForExitAsync(cancellationToken);
+                await Task.WhenAll(outputTask, errorTask);
             }
             catch (OperationCanceledException)
             {
                 TryKill(process);
+                await WaitForExitAfterCancellationAsync(process);
+                await ObserveReadersAfterCancellationAsync(outputTask, errorTask);
                 throw;
             }
 
-            await Task.WhenAll(outputTask, errorTask);
             return new ProcessResult(process.ExitCode, outputLines, errorLines);
         }
         finally
@@ -96,12 +101,36 @@ public sealed class ProcessRunner
             TryKill(process);
     }
 
-    private async Task ReadLinesAsync(StreamReader reader, ICollection<string> destination)
+    private async Task ReadLinesAsync(StreamReader reader, List<string> destination)
     {
         while (await reader.ReadLineAsync() is { } line)
         {
             destination.Add(line);
             _onOutput(line + Environment.NewLine);
+        }
+    }
+
+    private static async Task WaitForExitAfterCancellationAsync(Process process)
+    {
+        try
+        {
+            await process.WaitForExitAsync();
+        }
+        catch (InvalidOperationException)
+        {
+            // The process may not have started if cancellation raced with startup.
+        }
+    }
+
+    private static async Task ObserveReadersAfterCancellationAsync(params Task[] readers)
+    {
+        try
+        {
+            await Task.WhenAll(readers);
+        }
+        catch (Exception exception) when (exception is IOException or ObjectDisposedException)
+        {
+            // Killing the process can close redirected streams while a read is in flight.
         }
     }
 

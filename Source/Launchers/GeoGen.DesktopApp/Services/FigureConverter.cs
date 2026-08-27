@@ -1,4 +1,5 @@
 using GeoGen.DesktopApp.Models;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -11,8 +12,8 @@ public sealed partial class FigureConverter
 
     public FigureConverter(ProcessRunner processRunner, Action<string> onOutput)
     {
-        _processRunner = processRunner;
-        _onOutput = onOutput;
+        _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
+        _onOutput = onOutput ?? throw new ArgumentNullException(nameof(onOutput));
     }
 
     public async Task<FigureConversionResult> ConvertAsync(
@@ -26,7 +27,7 @@ public sealed partial class FigureConverter
             .EnumerateFiles(figureDataDirectory)
             .Select(path => new { Path = path, Match = FigureFileRegex().Match(Path.GetFileName(path)) })
             .Where(item => item.Match.Success)
-            .OrderBy(item => int.Parse(item.Match.Groups[1].Value))
+            .OrderBy(item => int.Parse(item.Match.Groups[1].Value, CultureInfo.InvariantCulture))
             .ToArray();
 
         if (sourceFiles.Length == 0)
@@ -40,8 +41,9 @@ public sealed partial class FigureConverter
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var number = int.Parse(item.Match.Groups[1].Value);
+            var number = int.Parse(item.Match.Groups[1].Value, CultureInfo.InvariantCulture);
             var pdfPath = Path.Combine(destinationDirectory, $"figure-{number:D4}.pdf");
+            DeleteIfExists(pdfPath);
             _onOutput($"Converting figure {number}... ");
 
             if (await TryConvertAsync(item.Path, pdfPath, figureDataDirectory, cancellationToken))
@@ -106,6 +108,9 @@ public sealed partial class FigureConverter
 
         foreach (var attempt in attempts)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            DeleteIfExists(pdfPath);
+
             try
             {
                 var result = await _processRunner.RunAsync(
@@ -115,7 +120,7 @@ public sealed partial class FigureConverter
                     standardInputLines: null,
                     cancellationToken);
 
-                if (result.ExitCode == 0 && File.Exists(pdfPath))
+                if (result.ExitCode == 0 && File.Exists(pdfPath) && new FileInfo(pdfPath).Length > 0)
                     return true;
             }
             catch (OperationCanceledException)
@@ -128,7 +133,19 @@ public sealed partial class FigureConverter
             }
         }
 
+        DeleteIfExists(pdfPath);
         return false;
+    }
+
+    private static void DeleteIfExists(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (DirectoryNotFoundException)
+        {
+        }
     }
 
     [GeneratedRegex(@"^figures\.(\d+)(?:\.eps)?$", RegexOptions.IgnoreCase)]

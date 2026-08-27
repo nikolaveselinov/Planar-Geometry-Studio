@@ -2,7 +2,7 @@ using Avalonia;
 
 namespace GeoGen.DesktopApp;
 
-class Program
+sealed class Program
 {
     [STAThread]
     public static void Main(string[] args) => BuildAvaloniaApp()
