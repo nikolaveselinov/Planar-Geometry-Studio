@@ -24,7 +24,7 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
 
     <!-- Testing -->
-    <PackageVersion Include="FluentAssertions" Version="8.8.0" />
+    <PackageVersion Include="FluentAssertions" Version="7.2.2" />
     <PackageVersion Include="NUnit" Version="4.4.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
 
