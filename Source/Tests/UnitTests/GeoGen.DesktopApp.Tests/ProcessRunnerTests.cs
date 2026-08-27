@@ -64,7 +64,7 @@ public sealed class ProcessRunnerTests
             unixCommand: "sleep 30");
         using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
-        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+        Assert.CatchAsync<OperationCanceledException>(async () =>
             await runner.RunAsync(
                 executable,
                 arguments,
@@ -80,7 +80,7 @@ public sealed class ProcessRunnerTests
         using var cancellation = new CancellationTokenSource();
         cancellation.Cancel();
 
-        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+        Assert.CatchAsync<OperationCanceledException>(async () =>
             await runner.RunAsync(
                 "this-command-must-not-run",
                 Array.Empty<string>(),
