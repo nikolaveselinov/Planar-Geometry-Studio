@@ -1,11 +1,7 @@
-# Security policy
+# Security
 
-## Supported versions
+Security fixes are made for the latest release.
 
-Security fixes are provided for the latest released version of Planar Geometry Studio.
+Report vulnerabilities through **Report a vulnerability** in the GitHub Security tab. Do not open a public issue.
 
-## Reporting a vulnerability
-
-Please use GitHub's **Report a vulnerability** feature in the repository Security tab. Do not open a public issue for an undisclosed vulnerability.
-
-Include the affected version, reproduction steps, impact, and any suggested mitigation. You should receive an initial response within seven days.
+Include the affected version, reproduction steps, and impact.

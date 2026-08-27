@@ -24,7 +24,7 @@ public static partial class InputValidator
         var errors = new List<string>();
 
         if (string.IsNullOrWhiteSpace(input))
-            return new[] { "The input configuration is empty." };
+            return new[] { "Input is empty." };
 
         RequireSection(input, "Constructions:", errors);
         RequireSection(input, "Initial configuration:", errors);
@@ -34,7 +34,7 @@ public static partial class InputValidator
             var match = Regex.Match(input, $@"(?m)^\s*{Regex.Escape(parameter)}\s*:\s*(-?\d+)\s*$");
             if (!match.Success)
             {
-                errors.Add($"Missing or invalid '{parameter}: <non-negative integer>' parameter.");
+                errors.Add($"Missing or invalid '{parameter}' value.");
                 continue;
             }
 

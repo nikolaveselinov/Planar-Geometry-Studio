@@ -1,10 +1,6 @@
 # Contributing
 
-Thank you for improving Planar Geometry Studio. Small, focused pull requests with tests are easiest to review.
-
-## Development setup
-
-You need the .NET 10 SDK. MetaPost from TeX Live or MiKTeX is optional and only required to render figures.
+Install the .NET 10 SDK, then run:
 
 ```bash
 dotnet restore Source/GeoGen.sln
@@ -12,20 +8,18 @@ dotnet build Source/GeoGen.sln --configuration Release
 dotnet test Source/GeoGen.sln --configuration Release
 ```
 
-Run the desktop app with:
+Run the application with:
 
 ```bash
 dotnet run --project Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj
 ```
 
-Create a self-contained package for the current platform with `./publish.sh`, or pass a runtime such as `./publish.sh win-x64`.
+Pull requests should:
 
-## Pull requests
+- address one change;
+- include tests when behavior changes;
+- exclude generated output;
+- update the documentation when needed;
+- pass CI.
 
-- Explain the user impact and keep unrelated refactors separate.
-- Add or update tests for behavior changes.
-- Never commit generated output from GeoGen, MetaPost, build, or packaging runs.
-- Update `README.md` and `CHANGELOG.md` when behavior or distribution changes.
-- Confirm the CI build, test, and package smoke test pass.
-
-By contributing, you agree that your work is licensed under AGPL-3.0-only.
+Contributions are licensed under AGPL-3.0.

@@ -4,47 +4,33 @@ internal static class HelpContent
 {
     public const string QuickStart =
         """
-        PLANAR GEOMETRY STUDIO — QUICK START
+        QUICK START
 
-        1. Describe the search space
+        1. Write an input configuration.
+        2. Press F5 or select Generate.
+        3. Select Open Results to view the output.
+        4. Select Figures to draw the latest result.
 
-        Use the editor to choose constructions, an initial configuration, and generation limits.
-        File → New restores a complete working example.
+        Each run is stored in a separate folder under:
 
-        2. Generate theorems
+          Documents/Planar Geometry Studio/Runs/
 
-        Press F5 or choose Generate. The Studio validates the configuration, starts the GeoGen
-        engine, and streams progress into the console. Every run is stored in its own timestamped
-        folder, so an old result is never overwritten.
+        Figure generation requires MetaPost from TeX Live or MiKTeX. Without a PDF converter,
+        figures are saved as EPS files.
 
-        3. Inspect the result
+        Shortcuts
 
-        Open Results shows the latest run. Its Output folder contains:
-
-          • ReadableWithoutProofs — concise theorem statements
-          • ReadableWithProofs — statements with generated proofs
-          • JsonOutput — machine-readable results
-          • ReadableBestTheorems — the highest-ranked theorem of each type
-          • JsonBestTheorems — machine-readable best theorems
-
-        4. Draw figures
-
-        Choose Draw Figures after a successful run. The Studio uses the newest JSON result,
-        renders it with MetaPost, and asks where the figures should be saved. Install TeX Live
-        or MiKTeX for MetaPost and PDF conversion; if no PDF converter is available, the original
-        EPS figures are preserved.
-
-        Practical advice
-
-          • Start with one iteration and small object limits.
-          • Increase MaximalPoints, MaximalLines, or MaximalCircles when the search is too narrow.
-          • Prefer a targeted construction list: a smaller search is faster and easier to interpret.
-          • Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S, F5, and Esc are available throughout the app.
+          Ctrl+N        New
+          Ctrl+O        Open
+          Ctrl+S        Save
+          Ctrl+Shift+S  Save As
+          F5            Generate
+          Esc           Stop
         """;
 
     public const string Reference =
         """
-        PLANAR GEOMETRY STUDIO — INPUT REFERENCE
+        INPUT REFERENCE
 
         File structure
 
@@ -135,7 +121,16 @@ internal static class HelpContent
           GenerateOnlySymmetric
           GenerateOnlyFullySymmetric
 
-        Theorem types include collinearity, concurrency, concyclicity, equal line segments,
-        incidence, parallel and perpendicular lines, tangent circles, and line-circle tangency.
+        Theorem types
+
+          CollinearPoints
+          ConcurrentLines
+          ConcyclicPoints
+          EqualLineSegments
+          Incidence
+          LineTangentToCircle
+          ParallelLines
+          PerpendicularLines
+          TangentCircles
         """;
 }

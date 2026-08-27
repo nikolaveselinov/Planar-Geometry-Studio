@@ -23,7 +23,7 @@ public partial class UnsavedChangesDialog : Window
     {
         var message = this.FindControl<TextBlock>("MessageText");
         if (message is not null)
-            message.Text = $"{fileName} has changes that have not been saved.";
+            message.Text = $"{fileName} has unsaved changes.";
     }
 
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
