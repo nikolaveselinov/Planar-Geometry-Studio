@@ -195,7 +195,7 @@
                              IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                              FontFamily="Cascadia Code,JetBrains Mono,Consolas,monospace"
                              FontSize="12.5" LineHeight="19"
-                             Watermark="Output appears here."
+                             PlaceholderText="Output appears here."
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
                 </DockPanel>
             </Border>
