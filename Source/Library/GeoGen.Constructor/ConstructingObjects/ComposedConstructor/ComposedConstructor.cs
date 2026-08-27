@@ -68,9 +68,8 @@ namespace GeoGen.Constructor
 
                     break;
 
-                // Make sure no three points are collinear (quadrilateral or cyclic)
+                // Make sure no three points are collinear.
                 case LooseObjectLayout.Quadrilateral:
-                case LooseObjectLayout.CyclicQuadrilateral:
 
                     // Get the points
                     var point1 = (Point)input[0];
@@ -88,11 +87,32 @@ namespace GeoGen.Constructor
 
                     break;
 
-                // Right triangle: make sure the points are not collinear
+                // A cyclic quadrilateral additionally has to satisfy its defining axiom.
+                case LooseObjectLayout.CyclicQuadrilateral:
+
+                    var cyclicPoint1 = (Point)input[0];
+                    var cyclicPoint2 = (Point)input[1];
+                    var cyclicPoint3 = (Point)input[2];
+                    var cyclicPoint4 = (Point)input[3];
+
+                    if (AnalyticHelpers.AreCollinear(cyclicPoint1, cyclicPoint2, cyclicPoint3) ||
+                        AnalyticHelpers.AreCollinear(cyclicPoint1, cyclicPoint2, cyclicPoint4) ||
+                        AnalyticHelpers.AreCollinear(cyclicPoint1, cyclicPoint3, cyclicPoint4) ||
+                        AnalyticHelpers.AreCollinear(cyclicPoint2, cyclicPoint3, cyclicPoint4) ||
+                        !AnalyticHelpers.AreConcyclic(cyclicPoint1, cyclicPoint2, cyclicPoint3, cyclicPoint4))
+                        return null;
+
+                    break;
+
+                // A right triangle has its right angle at the first point.
                 case LooseObjectLayout.RightTriangle:
 
-                    // If yes, the construction shouldn't be possible
-                    if (AnalyticHelpers.AreCollinear((Point)input[0], (Point)input[1], (Point)input[2]))
+                    var rightAngleVertex = (Point)input[0];
+                    var rightPoint2 = (Point)input[1];
+                    var rightPoint3 = (Point)input[2];
+
+                    if (AnalyticHelpers.AreCollinear(rightAngleVertex, rightPoint2, rightPoint3) ||
+                        !new Line(rightAngleVertex, rightPoint2).IsPerpendicularTo(new Line(rightAngleVertex, rightPoint3)))
                         return null;
 
                     break;

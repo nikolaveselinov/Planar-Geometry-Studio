@@ -4,8 +4,11 @@
         x:Class="GeoGen.DesktopApp.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding WindowTitle}"
-        Width="1400" Height="900"
-        MinWidth="800" MinHeight="500"
+        Width="1480"
+        Height="920"
+        MinWidth="960"
+        MinHeight="620"
+        Background="#0A0F1D"
         WindowStartupLocation="CenterScreen">
 
     <Window.KeyBindings>
@@ -14,202 +17,189 @@
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
         <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
         <KeyBinding Gesture="F5" Command="{Binding GenerateCommand}" />
+        <KeyBinding Gesture="Ctrl+Enter" Command="{Binding GenerateCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding StopCommand}" />
     </Window.KeyBindings>
 
     <Window.Styles>
-        <!-- Toolbar button style -->
-        <Style Selector="Button.toolbar">
-            <Setter Property="Padding" Value="10,5" />
-            <Setter Property="Margin" Value="1" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="CornerRadius" Value="3" />
-        </Style>
-        <Style Selector="Button.toolbar-primary">
-            <Setter Property="Padding" Value="12,5" />
-            <Setter Property="Margin" Value="1" />
-            <Setter Property="FontSize" Value="12" />
+        <Style Selector="Button.command">
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="CornerRadius" Value="8" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="Background" Value="#4CAF50" />
+        </Style>
+        <Style Selector="Button.compact">
+            <Setter Property="Padding" Value="11,6" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="CornerRadius" Value="7" />
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#6D5EF7" />
             <Setter Property="Foreground" Value="White" />
         </Style>
-        <Style Selector="Button.toolbar-primary:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#45A049" />
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#3A1C2B" />
+            <Setter Property="Foreground" Value="#FFB4C4" />
         </Style>
-        <Style Selector="Button.toolbar-danger">
-            <Setter Property="Padding" Value="10,5" />
-            <Setter Property="Margin" Value="1" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="Background" Value="#E53935" />
-            <Setter Property="Foreground" Value="White" />
+        <Style Selector="TextBox.editor">
+            <Setter Property="Background" Value="#101829" />
+            <Setter Property="Foreground" Value="#E6EAF2" />
+            <Setter Property="SelectionBrush" Value="#6558D8" />
+            <Setter Property="CaretBrush" Value="#A99EFF" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="18" />
         </Style>
-        <Style Selector="Button.toolbar-danger:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#C62828" />
-        </Style>
-        <Style Selector="Button.toolbar-accent">
-            <Setter Property="Padding" Value="12,5" />
-            <Setter Property="Margin" Value="1" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="Background" Value="#1976D2" />
-            <Setter Property="Foreground" Value="White" />
-        </Style>
-        <Style Selector="Button.toolbar-accent:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#1565C0" />
-        </Style>
-
-        <!-- Force dark background on console output in all states -->
-        <Style Selector="TextBox#OutputBox /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="#1E1E1E" />
-        </Style>
-        <Style Selector="TextBox#OutputBox:pointerover /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="#1E1E1E" />
-        </Style>
-        <Style Selector="TextBox#OutputBox:focus /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="#1E1E1E" />
-        </Style>
-        <Style Selector="TextBox#OutputBox:focus-within /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="#1E1E1E" />
+        <Style Selector="TextBox.console">
+            <Setter Property="Background" Value="#080D17" />
+            <Setter Property="Foreground" Value="#C7D0E0" />
+            <Setter Property="SelectionBrush" Value="#314C73" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="18" />
         </Style>
     </Window.Styles>
 
     <DockPanel>
-        <!-- Menu Bar -->
-        <Menu DockPanel.Dock="Top">
+        <Menu DockPanel.Dock="Top" Background="#101727" Padding="8,2">
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Command="{Binding NewCommand}" InputGesture="Ctrl+N" />
-                <MenuItem Header="_Open..." Command="{Binding OpenCommand}" InputGesture="Ctrl+O" />
+                <MenuItem Header="_Open…" Command="{Binding OpenCommand}" InputGesture="Ctrl+O" />
                 <Separator />
                 <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="Ctrl+S" />
-                <MenuItem Header="Save _As..." Command="{Binding SaveAsCommand}" InputGesture="Ctrl+Shift+S" />
+                <MenuItem Header="Save _As…" Command="{Binding SaveAsCommand}" InputGesture="Ctrl+Shift+S" />
                 <Separator />
-                <MenuItem Header="Open _Output Folder" Command="{Binding OpenOutputFolderCommand}" />
+                <MenuItem Header="Open _Results" Command="{Binding OpenOutputFolderCommand}" />
                 <Separator />
                 <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
             <MenuItem Header="_Run">
-                <MenuItem Header="_Generate Problems" Command="{Binding GenerateCommand}" InputGesture="F5" />
-                <MenuItem Header="_Stop" Command="{Binding StopCommand}" />
+                <MenuItem Header="_Generate Theorems" Command="{Binding GenerateCommand}" InputGesture="F5" />
+                <MenuItem Header="_Stop" Command="{Binding StopCommand}" InputGesture="Esc" />
                 <Separator />
-                <MenuItem Header="Generate _Figures..." Command="{Binding FiguresCommand}" />
+                <MenuItem Header="_Draw Figures…" Command="{Binding FiguresCommand}" />
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="_Quick Start Guide" Command="{Binding QuickStartCommand}" />
-                <MenuItem Header="_Reference (Constructions and Parameters)" Command="{Binding ReferenceCommand}" />
+                <MenuItem Header="_Quick Start" Command="{Binding QuickStartCommand}" />
+                <MenuItem Header="Input _Reference" Command="{Binding ReferenceCommand}" />
                 <Separator />
                 <MenuItem Header="_About" Command="{Binding AboutCommand}" />
             </MenuItem>
         </Menu>
 
-        <!-- Toolbar -->
-        <Border DockPanel.Dock="Top" Background="#F5F5F5" BorderBrush="#E0E0E0"
-                BorderThickness="0,0,0,1" Padding="6,4">
-            <StackPanel Orientation="Horizontal" Spacing="3">
-                <Button Classes="toolbar" Content="New" Command="{Binding NewCommand}"
-                        ToolTip.Tip="New file (Ctrl+N)" />
-                <Button Classes="toolbar" Content="Open" Command="{Binding OpenCommand}"
-                        ToolTip.Tip="Open file (Ctrl+O)" />
-                <Button Classes="toolbar" Content="Save" Command="{Binding SaveCommand}"
-                        ToolTip.Tip="Save file (Ctrl+S)" />
+        <Border DockPanel.Dock="Top" Background="#0D1424" BorderBrush="#202A3E"
+                BorderThickness="0,0,0,1" Padding="20,14">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                <Border Width="46" Height="46" CornerRadius="12" Background="#6D5EF7">
+                    <TextBlock Text="△" FontSize="27" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
 
-                <Border Width="1" Background="#D0D0D0" Margin="6,2" />
-
-                <Button Classes="toolbar-primary" Content="&#x25B6; Generate Problems"
-                        Command="{Binding GenerateCommand}"
-                        ToolTip.Tip="Generate problems (F5)" />
-                <Button Classes="toolbar-danger" Content="&#x25A0; Stop"
-                        Command="{Binding StopCommand}"
-                        ToolTip.Tip="Stop generation" />
-
-                <Border Width="1" Background="#D0D0D0" Margin="6,2" />
-
-                <Button Classes="toolbar-accent" Content="Generate Figures"
-                        Command="{Binding FiguresCommand}"
-                        ToolTip.Tip="Generate and convert figures to PDF" />
-
-                <Border Width="1" Background="#D0D0D0" Margin="6,2" />
-
-                <Button Classes="toolbar" Content="Clear Output"
-                        Command="{Binding ClearOutputCommand}" />
-                <Button Classes="toolbar" Content="Open Output Folder"
-                        Command="{Binding OpenOutputFolderCommand}" />
-
-                <Border Width="1" Background="#D0D0D0" Margin="6,2" />
-
-                <Button Classes="toolbar" Content="Quick Start"
-                        Command="{Binding QuickStartCommand}"
-                        ToolTip.Tip="Show quick start guide" />
-                <Button Classes="toolbar" Content="Reference"
-                        Command="{Binding ReferenceCommand}"
-                        ToolTip.Tip="Show all constructions and parameters" />
-            </StackPanel>
-        </Border>
-
-        <!-- Status Bar -->
-        <Border DockPanel.Dock="Bottom" Background="#007ACC" Padding="10,4" MinHeight="28">
-            <Grid>
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <TextBlock Text="{Binding StatusText}" Foreground="White"
-                               FontSize="12" VerticalAlignment="Center" />
-                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsRunning}"
-                                 Width="120" Height="3" VerticalAlignment="Center"
-                                 Foreground="White" Background="#005A9E" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Planar Geometry Studio" FontSize="20" FontWeight="SemiBold"
+                               Foreground="#F7F8FC" />
+                    <TextBlock Text="Discover, prove, rank, and render planar geometry theorems"
+                               FontSize="12" Foreground="#8E9AAF" />
                 </StackPanel>
-                <TextBlock Text="{Binding CurrentFileName}" Foreground="#B0D4F1"
-                           FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                    <Button Classes="compact" Content="New" Command="{Binding NewCommand}"
+                            ToolTip.Tip="New configuration (Ctrl+N)" />
+                    <Button Classes="compact" Content="Open" Command="{Binding OpenCommand}"
+                            ToolTip.Tip="Open configuration (Ctrl+O)" />
+                    <Button Classes="compact" Content="Save" Command="{Binding SaveCommand}"
+                            ToolTip.Tip="Save configuration (Ctrl+S)" />
+                    <Border Width="1" Height="26" Background="#2A354B" Margin="4,0" />
+                    <Button Classes="command primary" Content="▶  Generate" Command="{Binding GenerateCommand}"
+                            ToolTip.Tip="Generate theorems (F5)" />
+                    <Button Classes="command danger" Content="■  Stop" Command="{Binding StopCommand}"
+                            ToolTip.Tip="Stop the active operation (Esc)" />
+                    <Button Classes="command" Content="Draw Figures" Command="{Binding FiguresCommand}" />
+                </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Main Content: Split View -->
-        <Grid ColumnDefinitions="*,5,*">
+        <Border DockPanel.Dock="Bottom" Background="#101727" BorderBrush="#202A3E"
+                BorderThickness="0,1,0,0" Padding="16,8">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                    <Border Width="8" Height="8" CornerRadius="4"
+                            Background="#7FE0B8" IsVisible="{Binding IsIdle}" />
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsRunning}"
+                                 Width="84" Height="4" Foreground="#8A7BFF" />
+                    <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="#D0D7E5" />
+                </StackPanel>
 
-            <!-- Left Panel: Code Editor -->
-            <DockPanel Grid.Column="0">
-                <Border DockPanel.Dock="Top" Background="#E8E8E8" Padding="10,5"
-                        BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
-                    <TextBlock Text="Input Configuration" FontWeight="SemiBold" FontSize="13" />
-                </Border>
-                <TextBox x:Name="EditorBox"
-                         Text="{Binding InputText, Mode=TwoWay}"
-                         AcceptsReturn="True"
-                         AcceptsTab="True"
-                         TextWrapping="NoWrap"
-                         FontFamily="Cascadia Code,Consolas,Courier New,monospace"
-                         FontSize="14"
-                         Padding="10"
-                         BorderThickness="0" />
-            </DockPanel>
+                <TextBlock Grid.Column="1" Text="{Binding WorkspaceText}" HorizontalAlignment="Center"
+                           FontSize="12" Foreground="#748197" TextTrimming="CharacterEllipsis" />
 
-            <!-- Splitter -->
-            <GridSplitter Grid.Column="1" Background="#CCCCCC"
-                          ResizeDirection="Columns" />
+                <TextBlock Grid.Column="2" Text="{Binding CurrentFileName}" FontSize="12"
+                           Foreground="#A9B4C6" />
+            </Grid>
+        </Border>
 
-            <!-- Right Panel: Console Output -->
-            <DockPanel Grid.Column="2">
-                <Border DockPanel.Dock="Top" Background="#1E1E1E" Padding="10,5"
-                        BorderBrush="#333333" BorderThickness="0,0,0,1">
-                    <TextBlock Text="Console Output" Foreground="#CCCCCC"
-                               FontWeight="SemiBold" FontSize="13" />
-                </Border>
-                <TextBox x:Name="OutputBox"
-                         Text="{Binding OutputText, Mode=OneWay}"
-                         IsReadOnly="True"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         FontFamily="Cascadia Code,Consolas,Courier New,monospace"
-                         FontSize="12"
-                         Background="#1E1E1E"
-                         Foreground="#D4D4D4"
-                         Padding="10"
-                         BorderThickness="0"
-                         Watermark="Output will appear here when you run generation..." />
-            </DockPanel>
+        <Grid Margin="16" ColumnSpacing="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*" MinWidth="360" />
+                <ColumnDefinition Width="7" />
+                <ColumnDefinition Width="5*" MinWidth="340" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#101829" BorderBrush="#222D43"
+                    BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+                <DockPanel>
+                    <Border DockPanel.Dock="Top" Background="#141E32" BorderBrush="#222D43"
+                            BorderThickness="0,0,0,1" Padding="16,11">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="INPUT CONFIGURATION" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="#A99EFF" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CurrentFileName}" FontSize="12"
+                                           Foreground="#D9DEEA" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding InputStatistics}" FontSize="11"
+                                       Foreground="#718096" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <TextBox x:Name="EditorBox" Classes="editor"
+                             Text="{Binding InputText, Mode=TwoWay}"
+                             AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap"
+                             FontFamily="Cascadia Code,JetBrains Mono,Consolas,monospace"
+                             FontSize="14" LineHeight="21"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Background="Transparent" ResizeDirection="Columns"
+                          Margin="2,20" />
+
+            <Border Grid.Column="2" Background="#080D17" BorderBrush="#222D43"
+                    BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+                <DockPanel>
+                    <Border DockPanel.Dock="Top" Background="#0D1422" BorderBrush="#222D43"
+                            BorderThickness="0,0,0,1" Padding="16,9">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <TextBlock Text="RUN CONSOLE" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="#7FE0B8" />
+                                <TextBlock Text="live engine output" FontSize="11" Foreground="#647187" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                <Button Classes="compact" Content="Clear" Command="{Binding ClearOutputCommand}" />
+                                <Button Classes="compact" Content="Open Results" Command="{Binding OpenOutputFolderCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <TextBox x:Name="OutputBox" Classes="console"
+                             Text="{Binding OutputText, Mode=OneWay}"
+                             IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             FontFamily="Cascadia Code,JetBrains Mono,Consolas,monospace"
+                             FontSize="12.5" LineHeight="19"
+                             Watermark="Engine output will appear here…"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                </DockPanel>
+            </Border>
         </Grid>
     </DockPanel>
 </Window>

@@ -29,9 +29,9 @@
     <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
 
     <!-- Avalonia UI -->
-    <PackageVersion Include="Avalonia" Version="11.2.3" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.2.3" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+    <PackageVersion Include="Avalonia" Version="12.1.1" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.1" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.1" />
   </ItemGroup>
 </Project>

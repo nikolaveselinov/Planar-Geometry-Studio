@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /Source
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      avalonia:
+        patterns:
+          - Avalonia*
+      test-tooling:
+        patterns:
+          - NUnit*
+          - Microsoft.NET.Test.Sdk
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday

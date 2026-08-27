@@ -1,59 +1,127 @@
-name: Publish Release
+name: Release
 
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
+    branches: [master]
+    paths:
+      - VERSION
 
-permissions:
-  contents: write
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-  build-and-release:
-    name: Build for ${{ matrix.os }}
+  version:
+    name: Validate version
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - os: linux
-            runtime: linux-x64
-            asset_name: GeoGen-Linux
-          - os: windows
-            runtime: win-x64
-            asset_name: GeoGen-Windows
-          - os: macos
-            runtime: osx-x64
-            asset_name: GeoGen-macOS
+    permissions:
+      contents: read
+    outputs:
+      number: ${{ steps.read.outputs.number }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v7
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Read VERSION
+        id: read
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(tr -d '[:space:]' < VERSION)"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid VERSION: $version" >&2
+            exit 1
+          fi
+          echo "number=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.rid }}
+    needs: version
+    runs-on: ${{ startsWith(matrix.rid, 'osx-') && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        rid:
+          - win-x64
+          - win-arm64
+          - linux-x64
+          - linux-arm64
+          - osx-x64
+          - osx-arm64
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
-      - name: Publish ${{ matrix.asset_name }}
-        env:
-          PROJECT_PATH: Source/Launchers/GeoGen.MainLauncher/GeoGen.MainLauncher.csproj
-        run: |
-          dotnet publish $PROJECT_PATH \
-          -c Release \
-          -r ${{ matrix.runtime }} \
-          --self-contained true \
-          -p:PublishSingleFile=true \
-          -p:PublishTrimmed=false \
-          -p:DebugSymbols=false \
-          -o ./publish/${{ matrix.asset_name }}
+      - name: Build release package
+        run: ./publish.sh "${{ matrix.rid }}" "${{ needs.version.outputs.number }}"
 
-      - name: Zip Build
-        run: |
-          cd ./publish/${{ matrix.asset_name }}
-          zip -r ../../${{ matrix.asset_name }}.zip .
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload release package
+        uses: actions/upload-artifact@v7
         with:
-          files: ${{ matrix.asset_name }}.zip
+          name: release-${{ matrix.rid }}
+          path: artifacts/PlanarGeometryStudio-v${{ needs.version.outputs.number }}-${{ matrix.rid }}.*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  publish:
+    name: Publish v${{ needs.version.outputs.number }}
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Download release packages
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create checksums
+        working-directory: release-assets
+        shell: bash
+        run: sha256sum PlanarGeometryStudio-* | sort -k2 > SHA256SUMS
+
+      - name: Prepare release notes
+        shell: bash
+        run: |
+          awk '
+            /^## \[/ {
+              if (found) exit
+              found = 1
+            }
+            found { print }
+          ' CHANGELOG.md > release-assets/RELEASE_NOTES.md
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ needs.version.outputs.number }}
+          target_commitish: ${{ github.sha }}
+          name: Planar Geometry Studio v${{ needs.version.outputs.number }}
+          body_path: release-assets/RELEASE_NOTES.md
+          fail_on_unmatched_files: true
+          files: |
+            release-assets/PlanarGeometryStudio-*
+            release-assets/SHA256SUMS

@@ -130,6 +130,14 @@ namespace GeoGen.MainLauncher
                 // A function to check if we should pause before exit
                 static bool ShouldPauseBeforeExit()
                 {
+                    // GUI hosts and automated callers explicitly opt out. Redirected input also
+                    // means there is no user available to dismiss an interactive prompt.
+                    var noPause = Environment.GetEnvironmentVariable("GEOGEN_NO_PAUSE");
+                    if (string.Equals(noPause, "1", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(noPause, "true", StringComparison.OrdinalIgnoreCase) ||
+                        Console.IsInputRedirected)
+                        return false;
+
                     // Linux/Mac: terminals set TERM environment variable
                     // Windows: check if we own the console
 

@@ -1,187 +1,100 @@
 # Planar Geometry Studio
 
-A desktop application for automated generation of planar geometry theorems, built on the [GeoGen engine](https://github.com/PatrikBak/GeoGen) by **Patrik Bak**.
+[![CI](https://github.com/nikolaveselinov/Planar-Geometry-Studio/actions/workflows/ci.yaml/badge.svg)](https://github.com/nikolaveselinov/Planar-Geometry-Studio/actions/workflows/ci.yaml)
+[![Latest release](https://img.shields.io/github/v/release/nikolaveselinov/Planar-Geometry-Studio)](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-Planar Geometry Studio wraps GeoGen in an intuitive GUI that lets you:
+Planar Geometry Studio is a cross-platform desktop environment for automatically discovering, proving, ranking, and drawing planar-geometry theorems. It pairs a focused Avalonia editor with the [GeoGen](https://github.com/PatrikBak/GeoGen) engine by Patrik Bak.
 
-- **Write** input configurations in a built-in code editor
-- **Generate** geometry problems and ranked theorems with one click
-- **Render** figures (EPS → PDF) via MetaPost
-- **Browse** results in human-readable and machine-readable formats
+## Why use it?
 
----
+- Write and validate generation configurations in one focused workspace.
+- Run GeoGen with live progress, reliable cancellation, and useful failure details.
+- Keep every run in its own timestamped folder—inputs and results are never silently overwritten.
+- Review readable theorems, full proofs, ranked results, and machine-readable JSON.
+- Render generated configurations with MetaPost and convert figures to PDF when a supported converter is available.
+- Install nothing else for theorem generation: release packages include the desktop app, .NET runtime, engine, drawer, rules, and settings.
 
 ## Download
 
-Pre-built releases are available on the [Releases](../../releases) page.
+Download the archive for your system from the [latest release](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest):
 
----
+| Platform | Intel / AMD 64-bit | Arm 64-bit |
+|---|---|---|
+| Windows | `win-x64.zip` | `win-arm64.zip` |
+| Linux | `linux-x64.tar.gz` | `linux-arm64.tar.gz` |
+| macOS | `osx-x64.zip` | `osx-arm64.zip` |
 
-## Usage
+Extract the archive and launch `PlanarGeometryStudio` (`PlanarGeometryStudio.exe` on Windows). On macOS, open **Planar Geometry Studio.app**. Release checksums are provided in `SHA256SUMS`.
 
-### Step 1: Write an Input Configuration
+> Figure rendering additionally requires MetaPost from [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). The Studio keeps generated EPS figures if a PDF converter is unavailable.
 
-The left panel is a code editor where you define what the generator should work with.
+## Quick start
 
-```
+1. Enter a configuration in the editor. The bundled example is ready to run.
+2. Select **Generate** or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
+3. Follow progress in the live console; use <kbd>Esc</kbd> to cancel safely.
+4. Select **Open results** to inspect theorem and JSON output.
+5. Select **Generate figures** to draw configurations from the latest run.
+
+Each run is stored under `Documents/Planar Geometry Studio/Runs/` in a unique directory.
+
+### Minimal input
+
+```text
 Constructions:
 
+ Midpoint
  Median
- IntersectionOfLinesFromPoints
 
 Initial configuration:
 
  Triangle: A, B, C
- D = Incenter(A, B, C)
 
 Iterations: 1
 MaximalPoints: 1
-MaximalLines: 0
+MaximalLines: 1
 MaximalCircles: 0
 SymmetryGenerationMode: GenerateBothSymmetricAndAsymmetric
 ```
 
-### Step 2: Generate Problems
+The in-app **Input reference** documents available configuration types, parameters, symmetry modes, and constructions including `CircleWithRadius`.
 
-Press **Generate Problems** (or **F5**). The engine reads your input, builds configurations, discovers theorems, ranks them, and writes results to the output directory.
+## Results
 
-### Step 3: Generate Figures
-
-After generation completes, press **Generate Figures**. The application automatically locates the JSON output, renders EPS figures using MetaPost, and converts them to PDF in a folder you choose.
-
-> **Requirement:** A TeX distribution (TeX Live or MiKTeX) must be installed for figure generation.
-
-### Step 4: Review Results
-
-Use **Open Output Folder** to browse the generated results:
-
-| Folder | Contents |
+| Directory | Contents |
 |---|---|
 | `ReadableWithoutProofs/` | Human-readable theorem statements |
-| `ReadableWithProofs/` | Theorems with full proofs |
-| `JsonOutput/` | Machine-readable JSON output |
+| `ReadableWithProofs/` | Theorems with complete generated proofs |
 | `ReadableBestTheorems/` | Top-ranked theorems |
+| `JsonOutput/` | Machine-readable generation results |
+| `JsonBestTheorems/` | Machine-readable ranked results |
+| `Logs/` | Engine diagnostics for that run |
+| `Figures/` | EPS and, when conversion is available, PDF figures |
 
----
+## Build from source
 
-## Constructions
-
-### Predefined Constructions (13)
-
-| Construction | Description |
-|---|---|
-| `CenterOfCircle(c)` | Center of circle *c* |
-| `Circumcircle(A, B, C)` | Circumscribed circle of *ABC* |
-| `CircleWithCenterThroughPoint(A, B)` | Circle centered at *A* through *B* |
-| `InternalAngleBisector(A, B, C)` | Bisector of angle *BAC* |
-| `IntersectionOfLines(l, m)` | Intersection of lines *l* and *m* |
-| `LineFromPoints(A, B)` | Line through *A* and *B* |
-| `Midpoint(A, B)` | Midpoint of segment *AB* |
-| `ParallelLine(A, l)` | Line through *A* parallel to *l* |
-| `PerpendicularLine(A, l)` | Line through *A* perpendicular to *l* |
-| `PerpendicularProjection(A, l)` | Foot of perpendicular from *A* to *l* |
-| `PointReflection(A, B)` | Reflection of *A* through *B* |
-| `SecondIntersectionOfCircleAndLineFromPoints(A, B, C, D)` | Second intersection of line *AB* with circumcircle of *ACD* |
-| `SecondIntersectionOfTwoCircumcircles(A, B, C, D, E)` | Second intersection of circumcircles of *ABC* and *ADE* |
-
-### Composed Constructions (28)
-
-| Construction | Description |
-|---|---|
-| `Centroid(A, B, C)` | Centroid of triangle *ABC* |
-| `CircleWithDiameter(A, B)` | Circle with diameter *AB* |
-| `Circumcenter(A, B, C)` | Circumcenter of triangle *ABC* |
-| `Excenter(A, B, C)` | *A*-excenter of triangle *ABC* |
-| `Excircle(A, B, C)` | *A*-excircle of triangle *ABC* |
-| `ExternalAngleBisector(A, B, C)` | External bisector of angle *BAC* |
-| `Incenter(A, B, C)` | Incenter of triangle *ABC* |
-| `Incircle(A, B, C)` | Incircle of triangle *ABC* |
-| `IntersectionOfLineAndLineFromPoints(l, A, B)` | Intersection of *l* and line *AB* |
-| `IntersectionOfLinesFromPoints(A, B, C, D)` | Intersection of lines *AB* and *CD* |
-| `IsoscelesTrapezoidPoint(A, B, C)` | *D* such that *ABCD* is an isosceles trapezoid |
-| `LineThroughCircumcenter(A, B, C)` | Line through *A* and the circumcenter of *ABC* |
-| `Median(A, B, C)` | *A*-median of triangle *ABC* |
-| `Midline(A, B, C)` | *A*-midline of triangle *ABC* |
-| `MidpointOfArc(A, B, C)` | Midpoint of arc *BAC* |
-| `MidpointOfOppositeArc(A, B, C)` | Midpoint of arc *BC* not containing *A* |
-| `NinePointCircle(A, B, C)` | Nine-point circle of *ABC* |
-| `OppositePointOnCircumcircle(A, B, C)` | Diametrically opposite *A* on circumcircle |
-| `Orthocenter(A, B, C)` | Orthocenter of triangle *ABC* |
-| `ParallelLineToLineFromPoints(A, B, C)` | Line through *A* parallel to *BC* |
-| `ParallelogramPoint(A, B, C)` | *D* such that *ABDC* is a parallelogram |
-| `PerpendicularBisector(A, B)` | Perpendicular bisector of *AB* |
-| `PerpendicularLineAtPointOfLine(A, B)` | Line at *A* perpendicular to *AB* |
-| `PerpendicularLineToLineFromPoints(A, B, C)` | Line through *A* perpendicular to *BC* |
-| `PerpendicularProjectionOnLineFromPoints(A, B, C)` | Projection of *A* onto line *BC* |
-| `ReflectionInLine(l, A)` | Reflection of *A* in line *l* |
-| `ReflectionInLineFromPoints(A, B, C)` | Reflection of *A* in line *BC* |
-| `TangentLine(A, B, C)` | Tangent to circumcircle of *ABC* at *A* |
-
----
-
-## Parameters
-
-| Parameter | Description |
-|---|---|
-| `Iterations` | Number of generation steps (more = slower, richer) |
-| `MaximalPoints` | Max new points per iteration |
-| `MaximalLines` | Max new lines per iteration |
-| `MaximalCircles` | Max new circles per iteration |
-| `SymmetryGenerationMode` | `GenerateBothSymmetricAndAsymmetric` (default), `GenerateOnlySymmetric`, `GenerateOnlyFullySymmetric` |
-
-### Base Types
-
-| Type | Description |
-|---|---|
-| `Triangle: A, B, C` | Three non-collinear points (acute) |
-| `RightTriangle: A, B, C` | Right angle at the first point |
-| `Quadrilateral: A, B, C, D` | Four points, convex, no three collinear |
-| `CyclicQuadrilateral: A, B, C, D` | Four concyclic points |
-| `LineSegment: A, B` | Two distinct points |
-| `LineAndPoint: l, A` | A line and a point not on it |
-| `LineAndTwoPoints: l, A, B` | A line and two points not on it |
-
----
-
-## Build from Source
-
-### Prerequisites
-
-- [.NET 10 SDK](https://dotnet.microsoft.com/)
-- [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/) (for figure generation)
-
-### Build
+Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), then run:
 
 ```bash
-cd Source
-dotnet build GeoGen.sln
+dotnet restore Source/GeoGen.sln
+dotnet build Source/GeoGen.sln --configuration Release
+dotnet test Source/GeoGen.sln --configuration Release
+dotnet run --project Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj
 ```
 
-### Run the Desktop App
+Create a self-contained package with:
 
 ```bash
-cd Source/Launchers/GeoGen.DesktopApp
-dotnet run
+./publish.sh linux-x64
 ```
 
-### Publish (Self-Contained)
+Windows users can run `./publish.ps1 -Runtime win-x64`. Supported runtime identifiers are `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-x64`, and `osx-arm64`.
 
-**Linux:**
-```bash
-./publish.sh
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidance and [CHANGELOG.md](CHANGELOG.md) for release details.
 
-**Windows (PowerShell):**
-```powershell
-.\publish.ps1
-```
+## Project lineage and license
 
----
+The original GeoGen engine—configuration generation, theorem discovery, proof, simplification, sorting, and ranking—was created by [Patrik Bak](https://github.com/PatrikBak). Planar Geometry Studio adds the desktop workflow and distribution while continuing to integrate upstream improvements.
 
-## Acknowledgments
-
-This project is built on the **GeoGen** engine by [Patrik Bak](https://github.com/PatrikBak/GeoGen), which implements automated generation of planar geometry theorems. The original GeoGen engine handles configuration generation, theorem discovery, proving, and ranking. Planar Geometry Studio adds a desktop GUI and figure generation workflow on top of this engine.
-
-## License
-
-This project is licensed under the GNU Affero General Public License v3.0 — the same license as the original [GeoGen](https://github.com/PatrikBak/GeoGen) engine. See [LICENSE](LICENSE) for details.
+Licensed under [GNU AGPL v3.0](LICENSE).

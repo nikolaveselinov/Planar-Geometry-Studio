@@ -137,6 +137,12 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 
+# GeoGen / MetaPost generated output
+Source/Launchers/GeoGen.DrawingLauncher/Data/figures.*
+Source/Launchers/GeoGen.DrawingLauncher/Data/mptextmp.*
+Source/Launchers/GeoGen.DrawingLauncher/mptextmp.*
+Source/Launchers/GeoGen.MainLauncher/Examples/Output/
+
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
