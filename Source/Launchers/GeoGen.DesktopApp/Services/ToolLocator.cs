@@ -5,6 +5,13 @@ namespace GeoGen.DesktopApp.Services;
 
 public sealed class ToolLocator
 {
+    private readonly string _baseDirectory;
+
+    public ToolLocator(string? baseDirectory = null)
+    {
+        _baseDirectory = Path.GetFullPath(baseDirectory ?? AppContext.BaseDirectory);
+    }
+
     public ToolLocation? FindEngine() => FindTool(
         publishedRelativePath: Path.Combine("tools", "engine"),
         projectDirectoryName: "GeoGen.MainLauncher",
@@ -15,23 +22,24 @@ public sealed class ToolLocator
         projectDirectoryName: "GeoGen.DrawingLauncher",
         assemblyName: "GeoGen.DrawingLauncher");
 
-    private static ToolLocation? FindTool(
+    private ToolLocation? FindTool(
         string publishedRelativePath,
         string projectDirectoryName,
         string assemblyName)
     {
-        var baseDirectory = AppContext.BaseDirectory;
-        var publishedDirectory = Path.Combine(baseDirectory, publishedRelativePath);
+        var publishedDirectory = Path.Combine(_baseDirectory, publishedRelativePath);
         var published = ResolveFromDirectory(publishedDirectory, assemblyName);
         if (published is not null)
             return published;
 
-        var sibling = ResolveFromDirectory(baseDirectory, assemblyName);
+        var sibling = ResolveFromDirectory(_baseDirectory, assemblyName);
         if (sibling is not null)
             return sibling;
 
-        var projectDirectory = Path.GetFullPath(Path.Combine(
-            baseDirectory, "..", "..", "..", "..", projectDirectoryName));
+        var projectDirectory = FindDevelopmentProjectDirectory(projectDirectoryName);
+        if (projectDirectory is null)
+            return null;
+
         var binDirectory = Path.Combine(projectDirectory, "bin");
         if (!Directory.Exists(binDirectory))
             return null;
@@ -45,6 +53,22 @@ public sealed class ToolLocator
         return candidates
             .Select(path => ResolveFromDirectory(Path.GetDirectoryName(path)!, assemblyName))
             .FirstOrDefault(location => location is not null);
+    }
+
+    private string? FindDevelopmentProjectDirectory(string projectDirectoryName)
+    {
+        for (var current = new DirectoryInfo(_baseDirectory); current is not null; current = current.Parent)
+        {
+            var siblingProject = Path.Combine(current.FullName, projectDirectoryName);
+            if (Directory.Exists(siblingProject))
+                return siblingProject;
+
+            var launcherProject = Path.Combine(current.FullName, "Launchers", projectDirectoryName);
+            if (Directory.Exists(launcherProject))
+                return launcherProject;
+        }
+
+        return null;
     }
 
     private static ToolLocation? ResolveFromDirectory(string directory, string assemblyName)
