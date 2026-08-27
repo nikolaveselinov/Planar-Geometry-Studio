@@ -1,4 +1,5 @@
 using GeoGen.DesktopApp.Models;
+using System.Globalization;
 using System.Text.Json;
 
 namespace GeoGen.DesktopApp.Services;
@@ -21,14 +22,7 @@ public sealed class WorkspaceManager
 
     public GenerationWorkspace CreateRunWorkspace()
     {
-        Directory.CreateDirectory(RunsDirectory);
-
-        var stem = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-        var runDirectory = Path.Combine(RunsDirectory, stem);
-        var suffix = 2;
-        while (Directory.Exists(runDirectory))
-            runDirectory = Path.Combine(RunsDirectory, $"{stem}-{suffix++}");
-
+        var runDirectory = CreateTimestampedDirectory(RunsDirectory);
         var workspace = new GenerationWorkspace(runDirectory);
         CreateWorkspaceDirectories(workspace);
         return workspace;
@@ -143,10 +137,7 @@ public sealed class WorkspaceManager
         string drawerDirectory,
         CancellationToken cancellationToken)
     {
-        var figureRoot = Path.Combine(
-            runWorkspace.RootDirectory,
-            "Figures",
-            DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
+        var figureRoot = CreateTimestampedDirectory(Path.Combine(runWorkspace.RootDirectory, "Figures"));
         var figureDataDirectory = Path.Combine(figureRoot, "Data");
         Directory.CreateDirectory(figureDataDirectory);
 
@@ -156,6 +147,7 @@ public sealed class WorkspaceManager
 
         await CopyDirectoryAsync(sourceDataDirectory, figureDataDirectory, cancellationToken);
 
+        cancellationToken.ThrowIfCancellationRequested();
         var settingsSource = Path.Combine(drawerDirectory, "settings.json");
         if (!File.Exists(settingsSource))
             throw new FileNotFoundException("The drawing settings file is missing.", settingsSource);
@@ -173,6 +165,20 @@ public sealed class WorkspaceManager
         Directory.CreateDirectory(workspace.ReadableOutputWithProofsDirectory);
         Directory.CreateDirectory(workspace.ReadableBestTheoremsDirectory);
         Directory.CreateDirectory(workspace.JsonBestTheoremsDirectory);
+    }
+
+    private static string CreateTimestampedDirectory(string parentDirectory)
+    {
+        Directory.CreateDirectory(parentDirectory);
+
+        var stem = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff", CultureInfo.InvariantCulture);
+        var directory = Path.Combine(parentDirectory, stem);
+        var suffix = 2;
+        while (Directory.Exists(directory))
+            directory = Path.Combine(parentDirectory, $"{stem}-{suffix++}");
+
+        Directory.CreateDirectory(directory);
+        return directory;
     }
 
     private static async Task CopyDirectoryAsync(
