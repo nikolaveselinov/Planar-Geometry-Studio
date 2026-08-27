@@ -46,6 +46,7 @@ public sealed class ProcessRunner
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!process.Start())
                 throw new InvalidOperationException($"Could not start '{executablePath}'.");
 
@@ -54,20 +55,21 @@ public sealed class ProcessRunner
             var outputTask = ReadLinesAsync(process.StandardOutput, outputLines);
             var errorTask = ReadLinesAsync(process.StandardError, errorLines);
 
-            if (standardInputLines is not null)
-            {
-                foreach (var line in standardInputLines)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await process.StandardInput.WriteLineAsync(line);
-                }
-
-                process.StandardInput.Close();
-            }
-
             try
             {
+                if (standardInputLines is not null)
+                {
+                    foreach (var line in standardInputLines)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await process.StandardInput.WriteLineAsync(line);
+                    }
+
+                    process.StandardInput.Close();
+                }
+
                 await process.WaitForExitAsync(cancellationToken);
+                await Task.WhenAll(outputTask, errorTask);
             }
             catch (OperationCanceledException)
             {
@@ -77,7 +79,6 @@ public sealed class ProcessRunner
                 throw;
             }
 
-            await Task.WhenAll(outputTask, errorTask);
             return new ProcessResult(process.ExitCode, outputLines, errorLines);
         }
         finally
