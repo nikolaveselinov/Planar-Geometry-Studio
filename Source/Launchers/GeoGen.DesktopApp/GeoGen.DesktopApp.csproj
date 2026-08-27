@@ -9,9 +9,9 @@
 		<RootNamespace>GeoGen.DesktopApp</RootNamespace>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-		<VersionPrefix>1.1.0</VersionPrefix>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
+		<VersionPrefix>1.1.1</VersionPrefix>
+		<AssemblyVersion>1.1.1.0</AssemblyVersion>
+		<FileVersion>1.1.1.0</FileVersion>
 		<Authors>Nikola Veselinov</Authors>
 		<Description>A desktop application for generating, proving, ranking, and drawing planar geometry theorems.</Description>
 		<RepositoryUrl>https://github.com/nikolaveselinov/Planar-Geometry-Studio</RepositoryUrl>
