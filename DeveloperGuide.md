@@ -1,30 +1,36 @@
-# Developer Guide
+# Developer guide
 
-This section is intended for developers who want to modify the source code or build it themselves.
+## Build and test
 
-## Development Setup
+Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), then run:
 
-### Prerequisites
+```bash
+dotnet restore Source/GeoGen.sln
+dotnet build Source/GeoGen.sln --configuration Release
+dotnet test Source/GeoGen.sln --configuration Release
+```
 
-The core programming language of the software is C#. To build the project, you need to have [.NET 10.0](https://dotnet.microsoft.com/download/dotnet/10.0) installed.
+Run the desktop application with:
 
-The application can be built by running `dotnet build` in the [Source](Source) folder.
+```bash
+dotnet run --project Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj
+```
 
-Automated tests can be run via `dotnet test` in the [Source](Source) folder.
+## Theorem prover integration test
 
-## Theorem Proving Integration Test
+[GeoGen.TheoremProver.IntegrationTest](Source/Tests/IntegrationTests/GeoGen.TheoremProver.IntegrationTest/Program.cs) takes two arguments:
 
-To review the capabilities of the theorem prover, run [this test](Source/Tests/IntegrationTests/GeoGen.TheoremProver.IntegrationTest/Program.cs). The `main` method requires two arguments:
+1. the inference-rule directory;
+2. the object-introduction-rule directory.
 
-1. Path to the folder with inference rules.
-2. Path to the folder with object introduction rules.
+The default paths are in [launchSettings.json](Source/Tests/IntegrationTests/GeoGen.TheoremProver.IntegrationTest/Properties/launchSettings.json).
 
-Default values that should work after cloning can be found in [launchSettings.json](Source/Tests/IntegrationTests/GeoGen.TheoremProver.IntegrationTest/Properties/launchSettings.json).
+## Other launchers
 
-## Helper Modules
+| Launcher | Purpose |
+|---|---|
+| [Configuration Generation](Source/Launchers/GeoGen.ConfigurationGenerationLauncher) | Count generated configurations and measure memory use |
+| [Input Generation](Source/Launchers/GeoGen.InputGenerationLauncher) | Generate input files for large runs |
+| [Output Merging](Source/Launchers/GeoGen.OutputMergingLauncher) | Merge JSON output directories |
 
-The following modules were used to prepare the large-scale experiments described in the [thesis](https://drive.google.com/file/d/1dsaxDCMzlAPfB3e4rd8ut2RuZ_sn2Zm5/view?usp=sharing):
-
-- **Configuration Generation Launcher** - Used to test generated configuration counts for input files (and memory usage). Can be used similarly to the _Main Launcher_, with default settings [here](Source/Launchers/GeoGen.ConfigurationGenerationLauncher/settings.json). Copy these settings to the executable's folder. Output is printed to the console only.
-- **Input Generation Launcher** - Generates input files. Running it creates around 4500 small files, totaling 4MB.
-- **Output Merging Launcher** - Merges the final results. The `main` method requires one argument: the path to the folder with JSON outputs (scanned recursively).
+These launchers were used for the experiments in Patrik Bak's [thesis](https://drive.google.com/file/d/1dsaxDCMzlAPfB3e4rd8ut2RuZ_sn2Zm5/view).

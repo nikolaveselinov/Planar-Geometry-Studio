@@ -4,42 +4,32 @@
 [![Latest release](https://img.shields.io/github/v/release/nikolaveselinov/Planar-Geometry-Studio)](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-Planar Geometry Studio is a cross-platform desktop environment for automatically discovering, proving, ranking, and drawing planar-geometry theorems. It pairs a focused Avalonia editor with the [GeoGen](https://github.com/PatrikBak/GeoGen) engine by Patrik Bak.
-
-## Why use it?
-
-- Write and validate generation configurations in one focused workspace.
-- Run GeoGen with live progress, reliable cancellation, and useful failure details.
-- Keep every run in its own timestamped folder—inputs and results are never silently overwritten.
-- Review readable theorems, full proofs, ranked results, and machine-readable JSON.
-- Render generated configurations with MetaPost and convert figures to PDF when a supported converter is available.
-- Install nothing else for theorem generation: release packages include the desktop app, .NET runtime, engine, drawer, rules, and settings.
+A desktop application for generating, proving, ranking, and drawing planar geometry theorems. It is based on [GeoGen](https://github.com/PatrikBak/GeoGen) by Patrik Bak.
 
 ## Download
 
-Download the archive for your system from the [latest release](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest):
+Download the [latest release](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest).
 
-| Platform | Intel / AMD 64-bit | Arm 64-bit |
+| Platform | x64 | Arm64 |
 |---|---|---|
 | Windows | `win-x64.zip` | `win-arm64.zip` |
 | Linux | `linux-x64.tar.gz` | `linux-arm64.tar.gz` |
 | macOS | `osx-x64.zip` | `osx-arm64.zip` |
 
-Extract the archive and launch `PlanarGeometryStudio` (`PlanarGeometryStudio.exe` on Windows). On macOS, open **Planar Geometry Studio.app**. Release checksums are provided in `SHA256SUMS`.
+Extract the archive and run `PlanarGeometryStudio` (`PlanarGeometryStudio.exe` on Windows). The packages include the application, GeoGen, and the .NET runtime.
 
-> Figure rendering additionally requires MetaPost from [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). The Studio keeps generated EPS figures if a PDF converter is unavailable.
+Drawing figures requires MetaPost from [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). If no PDF converter is installed, figures are saved as EPS files.
 
-## Quick start
+## Use
 
-1. Enter a configuration in the editor. The bundled example is ready to run.
-2. Select **Generate** or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
-3. Follow progress in the live console; use <kbd>Esc</kbd> to cancel safely.
-4. Select **Open results** to inspect theorem and JSON output.
-5. Select **Generate figures** to draw configurations from the latest run.
+1. Write an input configuration.
+2. Press <kbd>F5</kbd> or select **Generate**.
+3. Select **Open Results** to view the output.
+4. Select **Figures** to draw the latest result.
 
-Each run is stored under `Documents/Planar Geometry Studio/Runs/` in a unique directory.
+Runs are stored in `Documents/Planar Geometry Studio/Runs/`. Existing runs are not overwritten.
 
-### Minimal input
+### Example
 
 ```text
 Constructions:
@@ -58,21 +48,21 @@ MaximalCircles: 0
 SymmetryGenerationMode: GenerateBothSymmetricAndAsymmetric
 ```
 
-The in-app **Input reference** documents available configuration types, parameters, symmetry modes, and constructions including `CircleWithRadius`.
+See the [input and output reference](InputOutputFormat.md) for the full format.
 
-## Results
+## Output
 
 | Directory | Contents |
 |---|---|
-| `ReadableWithoutProofs/` | Human-readable theorem statements |
-| `ReadableWithProofs/` | Theorems with complete generated proofs |
-| `ReadableBestTheorems/` | Top-ranked theorems |
-| `JsonOutput/` | Machine-readable generation results |
-| `JsonBestTheorems/` | Machine-readable ranked results |
-| `Logs/` | Engine diagnostics for that run |
-| `Figures/` | EPS and, when conversion is available, PDF figures |
+| `ReadableWithoutProofs/` | Theorem statements |
+| `ReadableWithProofs/` | Theorems and proofs |
+| `ReadableBestTheorems/` | Highest-ranked theorems |
+| `JsonOutput/` | JSON output |
+| `JsonBestTheorems/` | Highest-ranked theorems in JSON |
+| `Logs/` | Run logs |
+| `Figures/` | EPS and PDF figures |
 
-## Build from source
+## Build
 
 Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), then run:
 
@@ -83,18 +73,14 @@ dotnet test Source/GeoGen.sln --configuration Release
 dotnet run --project Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj
 ```
 
-Create a self-contained package with:
+To build a release package:
 
 ```bash
 ./publish.sh linux-x64
 ```
 
-Windows users can run `./publish.ps1 -Runtime win-x64`. Supported runtime identifiers are `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-x64`, and `osx-arm64`.
+On Windows, use `./publish.ps1 -Runtime win-x64`.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidance and [CHANGELOG.md](CHANGELOG.md) for release details.
+## License
 
-## Project lineage and license
-
-The original GeoGen engine—configuration generation, theorem discovery, proof, simplification, sorting, and ranking—was created by [Patrik Bak](https://github.com/PatrikBak). Planar Geometry Studio adds the desktop workflow and distribution while continuing to integrate upstream improvements.
-
-Licensed under [GNU AGPL v3.0](LICENSE).
+[GNU AGPL v3.0](LICENSE). The GeoGen engine was created by [Patrik Bak](https://github.com/PatrikBak).

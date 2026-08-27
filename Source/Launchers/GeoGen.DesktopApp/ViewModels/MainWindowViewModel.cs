@@ -90,7 +90,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private GenerationWorkspace? _latestWorkspace;
     private string _savedInputText = DefaultInputText;
     private string _inputText = DefaultInputText;
-    private string _outputText = "Welcome to Planar Geometry Studio. Press F5 to generate from the example configuration, or open Quick Start for a guided tour.";
+    private string _outputText = "Press F5 to generate from the example input.";
     private string _statusText = "Ready";
     private string? _currentFilePath;
     private bool _isRunning;
@@ -341,10 +341,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (validationErrors.Count > 0)
         {
             SetConsoleContent(
-                "The configuration needs attention:\n\n" +
+                "Invalid input:\n\n" +
                 string.Join(Environment.NewLine, validationErrors.Select(error => $"  • {error}")) +
-                "\n\nOpen Reference for the complete input format.");
-            StatusText = "Configuration is not valid";
+                "\n\nSee Input Reference.");
+            StatusText = "Invalid input";
             return;
         }
 
@@ -355,7 +355,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             var engine = _toolLocator.FindEngine()
                 ?? throw new FileNotFoundException(
-                    "The GeoGen engine is missing. Install a complete Studio release or run the packaging script.");
+                    "GeoGen was not found. Reinstall the application or run the packaging script.");
 
             var defaultSettings = Path.Combine(engine.WorkingDirectory, "settings.json");
             if (!File.Exists(defaultSettings))
@@ -389,15 +389,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             var readableCount = CountFiles(workspace.ReadableOutputDirectory, "*.txt");
 
             AppendOutput(Environment.NewLine + new string('─', 64) + Environment.NewLine);
-            AppendOutput($"Generation complete • {readableCount} readable result file(s) • {jsonCount} JSON file(s){Environment.NewLine}");
+            AppendOutput($"Done: {readableCount} text file(s), {jsonCount} JSON file(s){Environment.NewLine}");
             AppendOutput($"Results: {workspace.OutputDirectory}{Environment.NewLine}");
 
             if (result.Contains("Interesting theorems: 0"))
             {
                 AppendOutput(
                     Environment.NewLine +
-                    "No non-trivial theorem survived this search. Try raising one object limit, " +
-                    "adding a special point to the initial configuration, or narrowing the construction list." +
+                    "No non-trivial theorems were found. Increase an object limit, add an initial object, " +
+                    "or change the construction list." +
                     Environment.NewLine);
             }
 
@@ -423,7 +423,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         var workspace = _latestWorkspace ?? _workspaceManager.FindLatestRun();
         if (workspace is null)
         {
-            SetConsoleContent("There is no generated run yet. Generate theorems before drawing figures.");
+            SetConsoleContent("No run found. Generate theorems first.");
             StatusText = "No generated run";
             return;
         }
@@ -431,7 +431,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         var jsonFile = FindLatestFile(workspace.JsonOutputDirectory, "*.json");
         if (jsonFile is null)
         {
-            SetConsoleContent("The latest run contains no JSON theorem output. Generate a run with at least one theorem first.");
+            SetConsoleContent("The latest run has no theorem JSON.");
             StatusText = "No theorem JSON found";
             return;
         }
@@ -464,7 +464,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
             var drawer = _toolLocator.FindDrawer()
                 ?? throw new FileNotFoundException(
-                    "The GeoGen drawing tool is missing. Install a complete Studio release or run the packaging script.");
+                    "The drawing tool was not found. Reinstall the application or run the packaging script.");
 
             var figureWorkspace = await _workspaceManager.PrepareFigureWorkspaceAsync(
                 workspace,
@@ -504,7 +504,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             {
                 AppendMetaPostDiagnostics(figureDataDirectory);
                 throw new InvalidOperationException(
-                    "MetaPost produced no figure files. Confirm that TeX Live or MiKTeX is installed and that 'mpost' is on PATH.");
+                    "MetaPost produced no figures. Check that TeX Live or MiKTeX is installed and 'mpost' is on PATH.");
             }
 
             AppendOutput(Environment.NewLine + new string('─', 64) + Environment.NewLine);
@@ -550,7 +550,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         if (!Directory.Exists(directory))
         {
-            AppendOutput("No results folder exists yet. Generate a run first." + Environment.NewLine);
+            AppendOutput("No results found. Generate a run first." + Environment.NewLine);
             StatusText = "No results folder";
             return;
         }
@@ -587,12 +587,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             $"""
             {AppInfo.Name} {AppInfo.Version}
 
-            A focused desktop environment for automated discovery, proof, ranking, and rendering
-            of planar geometry theorems.
-
-            The theorem engine is GeoGen by Patrik Bak. Planar Geometry Studio adds the desktop
-            workflow, isolated run history, safe process management, figure export, and release
-            packaging.
+            A desktop application for generating, proving, ranking, and drawing planar geometry
+            theorems. Based on GeoGen by Patrik Bak.
 
             Studio: {AppInfo.RepositoryUrl}
             GeoGen: {AppInfo.GeoGenRepositoryUrl}
