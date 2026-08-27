@@ -6,6 +6,7 @@ using GeoGen.DesktopApp.Models;
 using GeoGen.DesktopApp.Services;
 using GeoGen.DesktopApp.Views;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -13,10 +14,16 @@ using System.Windows.Input;
 
 namespace GeoGen.DesktopApp.ViewModels;
 
-public sealed partial class MainWindowViewModel : ViewModelBase
+public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private const int FlushIntervalMilliseconds = 120;
     private const int MaximumOutputLength = 500_000;
+
+    private static readonly FilePickerFileType[] ConfigurationFileTypes =
+    {
+        new("GeoGen input") { Patterns = new[] { "*.txt" } },
+        new("All files") { Patterns = new[] { "*" } }
+    };
 
     private const string DefaultInputText =
         """
@@ -229,10 +236,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public void Shutdown()
+    public void Shutdown() => Dispose();
+
+    public void Dispose()
     {
         _operationCancellation?.Cancel();
         _processRunner.CancelCurrent();
+        _operationCancellation?.Dispose();
+        _operationCancellation = null;
+        GC.SuppressFinalize(this);
     }
 
     private async Task NewFileAsync()
@@ -255,11 +267,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             Title = "Open input configuration",
             AllowMultiple = false,
-            FileTypeFilter = new[]
-            {
-                new FilePickerFileType("GeoGen input") { Patterns = new[] { "*.txt" } },
-                new FilePickerFileType("All files") { Patterns = new[] { "*" } }
-            }
+            FileTypeFilter = ConfigurationFileTypes
         });
 
         if (files.Count == 0)
@@ -307,11 +315,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             Title = "Save input configuration",
             DefaultExtension = "txt",
             SuggestedFileName = CurrentFilePath is null ? "input.txt" : Path.GetFileName(CurrentFilePath),
-            FileTypeChoices = new[]
-            {
-                new FilePickerFileType("GeoGen input") { Patterns = new[] { "*.txt" } },
-                new FilePickerFileType("All files") { Patterns = new[] { "*" } }
-            }
+            FileTypeChoices = ConfigurationFileTypes
         });
 
         if (file is null)
@@ -488,7 +492,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             var failedFigures = result.AllLines
                 .Select(line => FailedFigureRegex().Match(line))
                 .Where(match => match.Success)
-                .Select(match => int.Parse(match.Groups[1].Value))
+                .Select(match => int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture))
                 .Distinct()
                 .Order()
                 .ToArray();
