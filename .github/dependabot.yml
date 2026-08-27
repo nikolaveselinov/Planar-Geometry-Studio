@@ -13,6 +13,10 @@ updates:
         patterns:
           - NUnit*
           - Microsoft.NET.Test.Sdk
+    ignore:
+      - dependency-name: FluentAssertions
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
