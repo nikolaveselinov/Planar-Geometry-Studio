@@ -6,38 +6,51 @@ namespace GeoGen.DesktopApp.Views;
 
 public partial class MainWindow : Window
 {
+    private bool _allowClose;
+
     public MainWindow()
     {
         InitializeComponent();
 
-        var vm = new MainWindowViewModel(this);
-        DataContext = vm;
+        var viewModel = new MainWindowViewModel(this);
+        DataContext = viewModel;
 
-        // Auto-scroll the output box when new text is appended
-        vm.PropertyChanged += (s, e) =>
+        viewModel.PropertyChanged += (_, eventArgs) =>
         {
-            if (e.PropertyName == nameof(MainWindowViewModel.OutputText))
+            if (eventArgs.PropertyName != nameof(MainWindowViewModel.OutputText))
+                return;
+
+            var outputBox = this.FindControl<TextBox>("OutputBox");
+            if (outputBox is null)
+                return;
+
+            if (viewModel.ScrollOutputToTop)
             {
-                var outputBox = this.FindControl<TextBox>("OutputBox");
-                if (outputBox != null)
-                {
-                    if (vm.ScrollOutputToTop)
-                    {
-                        outputBox.CaretIndex = 0;
-                        vm.ScrollOutputToTop = false;
-                    }
-                    else
-                    {
-                        // Move caret to end to trigger auto-scroll
-                        outputBox.CaretIndex = outputBox.Text?.Length ?? 0;
-                    }
-                }
+                outputBox.CaretIndex = 0;
+                viewModel.ScrollOutputToTop = false;
+            }
+            else
+            {
+                outputBox.CaretIndex = outputBox.Text?.Length ?? 0;
             }
         };
+
+        Closing += OnClosing;
+        Closed += (_, _) => viewModel.Shutdown();
     }
 
-    private void InitializeComponent()
+    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
+
+    private async void OnClosing(object? sender, WindowClosingEventArgs eventArgs)
     {
-        AvaloniaXamlLoader.Load(this);
+        if (_allowClose || DataContext is not MainWindowViewModel viewModel || !viewModel.IsDirty)
+            return;
+
+        eventArgs.Cancel = true;
+        if (!await viewModel.ConfirmCloseAsync())
+            return;
+
+        _allowClose = true;
+        Close();
     }
 }

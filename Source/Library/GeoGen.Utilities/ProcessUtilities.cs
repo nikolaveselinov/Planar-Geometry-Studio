@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 
 namespace GeoGen.Utilities
 {
@@ -14,64 +13,34 @@ namespace GeoGen.Utilities
         /// <param name="command">The command to be run.</param>
         /// <param name="arguments">The arguments of the command.</param>
         /// <returns>The exit code, the output from the command's output stream, the output from the command's error stream.</returns>
-        public static Task<(int exitCode, string outputData, string errorData)> RunCommandAsync(string command, string arguments, string workingDirectory = null)
+        public static async Task<(int exitCode, string outputData, string errorData)> RunCommandAsync(string command, string arguments, string workingDirectory = null)
         {
-            // Prepare the task that will indicate the end of the command and hold the data
-            var taskCompletionSource = new TaskCompletionSource<(int exitCode, string output, string error)>();
-
-            // Prepare the process
-            var process = new Process
+            using var process = new Process
             {
-                // Setup the start
-                StartInfo =
+                StartInfo = new ProcessStartInfo
                 {
-                    // Pass the command
                     FileName = command,
-
-                    // With its arguments
                     Arguments = arguments,
-
-                    // Redirect the output
+                    UseShellExecute = false,
                     RedirectStandardOutput = true,
-
-                    // Redirect the errors
                     RedirectStandardError = true,
-
-                    // Set the working directory, if specified
-                    WorkingDirectory = workingDirectory ?? ""
-                },
-
-                // This is needed for the exit event to be fired
-                EnableRaisingEvents = true
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory ?? string.Empty
+                }
             };
 
-            // Prepare the string builders for the incoming output and error data
-            var ouputData = new StringBuilder();
-            var errorData = new StringBuilder();
+            if (!process.Start())
+                throw new InvalidOperationException($"Could not start command '{command}'.");
 
-            // Handle any incoming output and error data
-            process.OutputDataReceived += (s, ea) => ouputData.AppendLine(ea.Data);
-            process.ErrorDataReceived += (s, ea) => errorData.AppendLine(ea.Data);
+            // Read both redirected streams before awaiting the exit. This avoids deadlocks when
+            // either pipe fills and also guarantees that no trailing output is lost after Exited.
+            var outputTask = process.StandardOutput.ReadToEndAsync();
+            var errorTask = process.StandardError.ReadToEndAsync();
 
-            // Handle when it exists
-            process.Exited += (sender, args) =>
-            {
-                // Set the result
-                taskCompletionSource.SetResult((process.ExitCode, ouputData.ToString(), errorData.ToString()));
+            await process.WaitForExitAsync();
+            await Task.WhenAll(outputTask, errorTask);
 
-                // Dispose the process
-                process.Dispose();
-            };
-
-            // Start the process
-            process.Start();
-
-            // Start reading the output and error streams
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            // Return the task represented by this asynchronous operation
-            return taskCompletionSource.Task;
+            return (process.ExitCode, outputTask.Result, errorTask.Result);
         }
     }
 }

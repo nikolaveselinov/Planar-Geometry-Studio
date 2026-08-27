@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        working-directory: Source
+        run: dotnet restore GeoGen.sln
+
+      - name: Build
+        working-directory: Source
+        run: dotnet build GeoGen.sln --configuration Release --no-restore
+
+      - name: Test
+        working-directory: Source
+        run: dotnet test GeoGen.sln --configuration Release --no-build --verbosity normal
+
+  package-smoke-test:
+    name: Package smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build Linux package
+        run: ./publish.sh linux-x64
+
+      - name: Verify package contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(tr -d '[:space:]' < VERSION)"
+          archive="artifacts/PlanarGeometryStudio-v${version}-linux-x64.tar.gz"
+          test -s "$archive"
+          tar -tzf "$archive" > package-contents.txt
+          grep -Fxq "PlanarGeometryStudio/PlanarGeometryStudio" package-contents.txt
+          grep -Fxq "PlanarGeometryStudio/tools/engine/GeoGen" package-contents.txt
+          grep -Fxq "PlanarGeometryStudio/tools/drawer/GeoGen.DrawingLauncher" package-contents.txt
+          grep -Fq "PlanarGeometryStudio/tools/drawer/Data/drawing_rules.txt" package-contents.txt
+          grep -Fxq "PlanarGeometryStudio/LICENSE.txt" package-contents.txt
