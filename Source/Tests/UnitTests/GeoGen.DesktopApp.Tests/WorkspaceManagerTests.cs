@@ -58,4 +58,26 @@ public sealed class WorkspaceManagerTests
             Assert.That(manager.FindLatestRun()?.RootDirectory, Is.EqualTo(second.RootDirectory));
         });
     }
+
+    [Test]
+    public async Task CreatesIsolatedFigureWorkspaces()
+    {
+        var manager = new WorkspaceManager(_rootDirectory);
+        var run = manager.CreateRunWorkspace();
+        var drawerDirectory = Path.Combine(_rootDirectory, "drawer");
+        var dataDirectory = Path.Combine(drawerDirectory, "Data");
+        Directory.CreateDirectory(dataDirectory);
+        await File.WriteAllTextAsync(Path.Combine(dataDirectory, "drawing_rules.txt"), "rules");
+        await File.WriteAllTextAsync(Path.Combine(drawerDirectory, "settings.json"), "{}");
+
+        var first = await manager.PrepareFigureWorkspaceAsync(run, drawerDirectory, CancellationToken.None);
+        var second = await manager.PrepareFigureWorkspaceAsync(run, drawerDirectory, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(second, Is.Not.EqualTo(first));
+            Assert.That(File.ReadAllText(Path.Combine(first, "Data", "drawing_rules.txt")), Is.EqualTo("rules"));
+            Assert.That(File.Exists(Path.Combine(second, "settings.json")), Is.True);
+        });
+    }
 }
