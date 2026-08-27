@@ -33,6 +33,29 @@ public sealed class ProcessRunnerTests
     }
 
     [Test]
+    public async Task WritesStandardInputAndClosesTheStream()
+    {
+        var runner = new ProcessRunner(_ => { });
+        var (executable, arguments) = CreateShellCommand(
+            windowsCommand: "more",
+            unixCommand: "cat");
+
+        var result = await runner.RunAsync(
+            executable,
+            arguments,
+            Environment.CurrentDirectory,
+            new[] { "first", "second" },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(result.OutputLines, Is.EqualTo(new[] { "first", "second" }));
+            Assert.That(result.ErrorLines, Is.Empty);
+        });
+    }
+
+    [Test]
     public void CancellationStopsLongRunningProcess()
     {
         var runner = new ProcessRunner(_ => { });
