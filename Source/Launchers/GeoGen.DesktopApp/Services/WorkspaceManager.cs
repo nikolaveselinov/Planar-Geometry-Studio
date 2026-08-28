@@ -6,6 +6,8 @@ namespace GeoGen.DesktopApp.Services;
 
 public sealed class WorkspaceManager
 {
+    private static long _directorySequence;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
@@ -172,8 +174,9 @@ public sealed class WorkspaceManager
         Directory.CreateDirectory(parentDirectory);
 
         var stem = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff", CultureInfo.InvariantCulture);
-        var suffix = Guid.NewGuid().ToString("N");
-        var directory = Path.Combine(parentDirectory, $"{stem}-{suffix}");
+        var sequence = Interlocked.Increment(ref _directorySequence);
+        var uniqueId = Guid.NewGuid().ToString("N");
+        var directory = Path.Combine(parentDirectory, $"{stem}-{sequence:D20}-{uniqueId}");
 
         Directory.CreateDirectory(directory);
         return directory;
