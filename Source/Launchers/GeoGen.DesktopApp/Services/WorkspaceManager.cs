@@ -172,10 +172,8 @@ public sealed class WorkspaceManager
         Directory.CreateDirectory(parentDirectory);
 
         var stem = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff", CultureInfo.InvariantCulture);
-        var directory = Path.Combine(parentDirectory, stem);
-        var suffix = 2;
-        while (Directory.Exists(directory))
-            directory = Path.Combine(parentDirectory, $"{stem}-{suffix++}");
+        var suffix = Guid.NewGuid().ToString("N");
+        var directory = Path.Combine(parentDirectory, $"{stem}-{suffix}");
 
         Directory.CreateDirectory(directory);
         return directory;
