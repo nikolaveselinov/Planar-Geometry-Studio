@@ -55,6 +55,7 @@ namespace GeoGen.MainLauncher
             stopwatch.Start();
 
             // Run algorithm for each of them
+            var failures = new List<Exception>();
             inputs.ForEach((input, index) =>
             {
                 // Log the file being processed
@@ -69,6 +70,7 @@ namespace GeoGen.MainLauncher
                 {
                     // Log which file failed and the exception
                     Log.Error(e, "Couldn't perform the algorithm on input file {number} with path {path}", index + 1, input.FilePath);
+                    failures.Add(e);
                 }
             });
 
@@ -77,6 +79,9 @@ namespace GeoGen.MainLauncher
 
             // Log how long it all took
             Log.Information("Running algorithm on all files took {time} ms.", stopwatch.ElapsedMilliseconds);
+
+            if (failures.Count > 0)
+                throw new AggregateException($"Generation failed for {failures.Count} input file(s).", failures);
         }
 
         #endregion

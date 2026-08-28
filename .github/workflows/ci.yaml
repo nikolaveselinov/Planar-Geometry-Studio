@@ -62,15 +62,8 @@ jobs:
         run: ./publish.sh linux-x64
 
       - name: Verify package contents
-        shell: bash
         run: |
           set -euo pipefail
           version="$(tr -d '[:space:]' < VERSION)"
           archive="artifacts/PlanarGeometryStudio-v${version}-linux-x64.tar.gz"
-          test -s "$archive"
-          tar -tzf "$archive" > package-contents.txt
-          grep -Fxq "PlanarGeometryStudio/PlanarGeometryStudio" package-contents.txt
-          grep -Fxq "PlanarGeometryStudio/tools/engine/GeoGen" package-contents.txt
-          grep -Fxq "PlanarGeometryStudio/tools/drawer/GeoGen.DrawingLauncher" package-contents.txt
-          grep -Fq "PlanarGeometryStudio/tools/drawer/Data/drawing_rules.txt" package-contents.txt
-          grep -Fxq "PlanarGeometryStudio/LICENSE.txt" package-contents.txt
+          .github/scripts/verify-linux-package.sh "$archive"

@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Read VERSION
         id: read
@@ -38,11 +40,58 @@ jobs:
             echo "Invalid VERSION: $version" >&2
             exit 1
           fi
+
+          project_version="$(sed -n 's:.*<VersionPrefix>\([^<]*\)</VersionPrefix>.*:\1:p' Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj)"
+          assembly_version="$(sed -n 's:.*<AssemblyVersion>\([^<]*\)</AssemblyVersion>.*:\1:p' Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj)"
+          file_version="$(sed -n 's:.*<FileVersion>\([^<]*\)</FileVersion>.*:\1:p' Source/Launchers/GeoGen.DesktopApp/GeoGen.DesktopApp.csproj)"
+          changelog_version="$(sed -n 's/^## \[\([^]]*\)\].*/\1/p' CHANGELOG.md | head -1)"
+          if [[ "$project_version" != "$version" ||
+                "$assembly_version" != "$version.0" ||
+                "$file_version" != "$version.0" ||
+                "$changelog_version" != "$version" ]]; then
+            echo "VERSION, app versions, and the latest changelog entry must match." >&2
+            exit 1
+          fi
+
+          if git show-ref --verify --quiet "refs/tags/v$version"; then
+            echo "Tag v$version already exists. Releases are not overwritten." >&2
+            exit 1
+          fi
+
           echo "number=$version" >> "$GITHUB_OUTPUT"
+
+  verify:
+    name: Verify release commit
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        working-directory: Source
+        run: dotnet restore GeoGen.sln
+
+      - name: Build
+        working-directory: Source
+        run: dotnet build GeoGen.sln --configuration Release --no-restore
+
+      - name: Test
+        working-directory: Source
+        run: dotnet test GeoGen.sln --configuration Release --no-build --verbosity normal
 
   build:
     name: Build ${{ matrix.rid }}
-    needs: version
+    needs: [version, verify]
     runs-on: ${{ startsWith(matrix.rid, 'osx-') && 'macos-latest' || 'ubuntu-latest' }}
     timeout-minutes: 45
     permissions:
@@ -69,6 +118,10 @@ jobs:
 
       - name: Build release package
         run: ./publish.sh "${{ matrix.rid }}" "${{ needs.version.outputs.number }}"
+
+      - name: Verify Linux x64 package
+        if: matrix.rid == 'linux-x64'
+        run: .github/scripts/verify-linux-package.sh "artifacts/PlanarGeometryStudio-v${{ needs.version.outputs.number }}-linux-x64.tar.gz"
 
       - name: Upload release package
         uses: actions/upload-artifact@v7

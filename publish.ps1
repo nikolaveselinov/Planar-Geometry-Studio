@@ -77,6 +77,16 @@ Copy-Item -Recurse -Force (Join-Path $SourceDir "Launchers\GeoGen.DrawingLaunche
     if (Test-Path $_) { Remove-Item -Recurse -Force $_ }
 }
 
+@(
+    "ReadableWithoutProofs",
+    "ReadableWithProofs",
+    "JsonOutput",
+    "ReadableBestTheorems",
+    "JsonBestTheorems"
+) | ForEach-Object {
+    New-Item -ItemType Directory -Force -Path (Join-Path $AppDir "tools\engine\Examples\Output\$_") | Out-Null
+}
+
 Copy-Item (Join-Path $ScriptDir "LICENSE") (Join-Path $AppDir "LICENSE.txt")
 Copy-Item (Join-Path $ScriptDir "README.md") (Join-Path $AppDir "README.md")
 Copy-Item (Join-Path $ScriptDir "CHANGELOG.md") (Join-Path $AppDir "CHANGELOG.md")

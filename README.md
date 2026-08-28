@@ -16,7 +16,9 @@ Download the [latest release](https://github.com/nikolaveselinov/Planar-Geometry
 | Linux | `linux-x64.tar.gz` | `linux-arm64.tar.gz` |
 | macOS | `osx-x64.zip` | `osx-arm64.zip` |
 
-Extract the archive and run `PlanarGeometryStudio` (`PlanarGeometryStudio.exe` on Windows). The packages include the application, GeoGen, and the .NET runtime.
+Extract the archive. Run `PlanarGeometryStudio.exe` on Windows, `PlanarGeometryStudio` on Linux, or open `Planar Geometry Studio.app` on macOS. The packages include the application, GeoGen, and the .NET runtime.
+
+The macOS builds are unsigned. On first launch, right-click the app and select **Open**.
 
 Drawing figures requires MetaPost from [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). If no PDF converter is installed, figures are saved as EPS files.
 

@@ -67,6 +67,13 @@ rm -rf \
     "$APP_DIR/tools/engine/Logs" \
     "$APP_DIR/tools/drawer/Logs"
 
+mkdir -p \
+    "$APP_DIR/tools/engine/Examples/Output/ReadableWithoutProofs" \
+    "$APP_DIR/tools/engine/Examples/Output/ReadableWithProofs" \
+    "$APP_DIR/tools/engine/Examples/Output/JsonOutput" \
+    "$APP_DIR/tools/engine/Examples/Output/ReadableBestTheorems" \
+    "$APP_DIR/tools/engine/Examples/Output/JsonBestTheorems"
+
 cp "$SCRIPT_DIR/LICENSE" "$APP_DIR/LICENSE.txt"
 cp "$SCRIPT_DIR/README.md" "$APP_DIR/README.md"
 cp "$SCRIPT_DIR/CHANGELOG.md" "$APP_DIR/CHANGELOG.md"
@@ -103,7 +110,7 @@ PLIST
 elif [[ "$RID" == linux-* ]]; then
     ASSET_PATH="$ARTIFACT_DIR/$ASSET_STEM.tar.gz"
     rm -f "$ASSET_PATH"
-    tar -C "$STAGING_DIR" -czf "$ASSET_PATH" PlanarGeometryStudio
+    tar --owner=0 --group=0 -C "$STAGING_DIR" -czf "$ASSET_PATH" PlanarGeometryStudio
 else
     ASSET_PATH="$ARTIFACT_DIR/$ASSET_STEM.zip"
     rm -f "$ASSET_PATH"

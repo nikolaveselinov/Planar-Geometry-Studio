@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2] - 2026-08-28
+
+- Generation failures now return an error instead of reporting success.
+- Run folders stay unique across concurrent app instances.
+- Release builds now run the full test suite and an installed-engine smoke test.
+- Release versions must match the app and changelog, and existing releases cannot be overwritten.
+- Linux archives no longer preserve CI runner ownership.
+
 ## [1.1.1] - 2026-08-27
 
 ### Application
@@ -43,6 +51,7 @@
 
 - First desktop release.
 
+[1.1.2]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/tag/v1.0.0

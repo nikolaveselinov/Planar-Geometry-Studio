@@ -60,6 +60,26 @@ public sealed class WorkspaceManagerTests
     }
 
     [Test]
+    public async Task CreatesUniqueRunsAcrossConcurrentInstances()
+    {
+        const int runCount = 64;
+        using var start = new ManualResetEventSlim();
+
+        var tasks = Enumerable.Range(0, runCount)
+            .Select(_ => Task.Run(() =>
+            {
+                start.Wait();
+                return new WorkspaceManager(_rootDirectory).CreateRunWorkspace().RootDirectory;
+            }))
+            .ToArray();
+
+        start.Set();
+        var directories = await Task.WhenAll(tasks);
+
+        Assert.That(directories, Is.Unique);
+    }
+
+    [Test]
     public async Task CreatesIsolatedFigureWorkspaces()
     {
         var manager = new WorkspaceManager(_rootDirectory);
