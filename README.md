@@ -24,7 +24,7 @@ On first launch, **Studio Setup** detects existing drawing tools and offers auto
 
 Studio checks for new stable releases in the background on every launch. A notice links to the installer for your platform. Manage automatic checks in Studio Setup, or select **Help → Check for Updates**. Your configurations and results stay local.
 
-Windows installers are unsigned; macOS apps are ad-hoc signed, with unsigned packages. OS security prompts may appear until publisher certificates are configured.
+Windows installers are self-signed as **Nikola Veselinov**. You can see this name in **Properties → Digital Signatures**. Windows may still display “Unknown publisher” or security warnings because the certificate is not publicly trusted. macOS apps are ad-hoc signed, with unsigned packages.
 
 ## Use
 

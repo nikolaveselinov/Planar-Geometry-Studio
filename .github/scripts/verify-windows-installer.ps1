@@ -9,6 +9,9 @@ foreach ($file in @('PlanarGeometryStudio.exe', 'tools\engine\GeoGen.exe', 'tool
     if (-not (Test-Path (Join-Path $installDirectory $file))) { throw "Missing installed file: $file" }
 }
 $startMenu = Join-Path ([Environment]::GetFolderPath('ApplicationData')) "Microsoft\Windows\Start Menu\Programs\$group"
+& (Join-Path $PSScriptRoot 'verify-windows-signatures.ps1') -Files @(
+    $Installer, (Join-Path $installDirectory 'PlanarGeometryStudio.exe'),
+    (Join-Path $installDirectory 'unins000.exe'))
 if (-not (Test-Path (Join-Path $startMenu 'Planar Geometry Studio.lnk'))) { throw 'Start Menu shortcut is missing.' }
 if (-not (Test-Path (Join-Path $startMenu 'Studio Setup.lnk'))) { throw 'Setup shortcut is missing.' }
 
