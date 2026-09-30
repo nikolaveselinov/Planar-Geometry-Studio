@@ -6,13 +6,15 @@ if (-not $first.SignerCertificate -or $first.SignerCertificate.Subject -ne 'CN=N
     throw 'Expected Nikola Veselinov publisher signature.'
 }
 $certificate = $first.SignerCertificate
-$rootPath = 'Cert:\CurrentUser\Root\' + $certificate.Thumbprint
+$rootPath = 'Cert:\LocalMachine\Root\' + $certificate.Thumbprint
 if (Test-Path $rootPath) { throw 'The test certificate should not already be trusted.' }
-$store = [Security.Cryptography.X509Certificates.X509Store]::new('Root', 'CurrentUser')
+$store = [Security.Cryptography.X509Certificates.X509Store]::new('Root', 'LocalMachine')
 $tampered = Join-Path $env:RUNNER_TEMP ('publisher-tamper-' + [Guid]::NewGuid().ToString('N') + '.exe')
 try {
     # Trust only inside this disposable test runner to distinguish an intact
-    # self-signature from damaged bytes. No installer performs this operation.
+    # self-signature from damaged bytes. The machine store avoids the current-user
+    # protected-root confirmation dialog on unattended, elevated CI runners.
+    # No installer performs this operation.
     $store.Open([Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
     $store.Add($certificate)
     foreach ($file in $Files) {
