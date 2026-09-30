@@ -9,6 +9,8 @@ public sealed record DrawingToolStatus(string? MetaPost, string? TeX, string? Pd
 
 public static class DrawingToolEnvironment
 {
+    private static readonly string[] MacDirectories = { "/Library/TeX/texbin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin" };
+    private static readonly string[] UnixDirectories = { "/usr/local/bin", "/usr/bin", "/bin" };
     // GUI applications launched from Finder/Start often inherit an old or minimal PATH.
     // Discover installations directly and pass a fresh PATH to every child process.
     public static IEnumerable<string> SearchDirectories()
@@ -28,11 +30,11 @@ public static class DrawingToolEnvironment
         }
         else if (OperatingSystem.IsMacOS())
         {
-            candidates.AddRange(new[] { "/Library/TeX/texbin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin" });
+            candidates.AddRange(MacDirectories);
         }
         else
         {
-            candidates.AddRange(new[] { "/usr/local/bin", "/usr/bin", "/bin" });
+            candidates.AddRange(UnixDirectories);
         }
         candidates.AddRange((Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator));
         return candidates.Where(path => !string.IsNullOrWhiteSpace(path) && Path.IsPathFullyQualified(path))
