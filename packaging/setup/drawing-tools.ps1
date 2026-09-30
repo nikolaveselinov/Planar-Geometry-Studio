@@ -66,7 +66,7 @@ try {
     if ($miktex) {
         Write-Output 'Preparing MetaPost, plain TeX, and PDF export...'
         Invoke-Checked $miktex.Source @('packages', 'update-package-database')
-        foreach ($package in @('metapost', 'epstopdf')) {
+        foreach ($package in @('metapost', 'miktex-epstopdf-bin-x64-2.9')) {
             # MiKTeX's install command reports an error for already-installed
             # packages. Check metadata first so repeated setup is safe.
             $installed = (& $miktex.Source packages info '--template={isInstalled}' $package | Select-Object -Last 1)

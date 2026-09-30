@@ -73,7 +73,7 @@
             </MenuItem>
             <MenuItem Header="_Run">
                 <MenuItem Header="_Generate" Command="{Binding GenerateCommand}" InputGesture="F5" />
-                <MenuItem Header="_Stop" Command="{Binding StopCommand}" InputGesture="Esc" />
+                <MenuItem Header="_Stop" Command="{Binding StopCommand}" InputGesture="Escape" />
                 <Separator />
                 <MenuItem Header="_Figures…" Command="{Binding FiguresCommand}" />
             </MenuItem>
