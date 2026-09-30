@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0] - 2026-09-30
+
+- Native Windows setup executables, macOS packages/disk images, and Linux deb/rpm/per-user installers for x64 and ARM64.
+- Guided Studio Setup with automatic MiKTeX/TeX Live dependency installation, tool detection, privacy preferences, and setup notes.
+- Background update checks on every launch, native installer links, and manual checking from Help.
+- Start Menu/application menu integration, upgrade and uninstall support, and original installer artwork.
+- Discover newly installed TeX tools immediately, including GUI launches with an old PATH.
+- Preserve the existing AGPL license and all user runs during installation, upgrading, and uninstalling.
+- Shared cross-platform packaging CI with installer and update-service tests.
+
 ## [1.1.2] - 2026-08-28
 
 - Generation failures now return an error instead of reporting success.

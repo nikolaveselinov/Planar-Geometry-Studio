@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Planar Geometry Studio
+Comment=Generate, prove, and draw planar geometry theorems
+Exec=planargeometrystudio
+Icon=planargeometrystudio
+Terminal=false
+Categories=Education;Science;Math;
+StartupNotify=true
+Actions=Setup;
+
+[Desktop Action Setup]
+Name=Studio Setup
+Exec=planargeometrystudio --setup

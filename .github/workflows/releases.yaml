@@ -90,47 +90,13 @@ jobs:
         run: dotnet test GeoGen.sln --configuration Release --no-build --verbosity normal
 
   build:
-    name: Build ${{ matrix.rid }}
+    name: Build native installers
     needs: [version, verify]
-    runs-on: ${{ startsWith(matrix.rid, 'osx-') && 'macos-latest' || 'ubuntu-latest' }}
-    timeout-minutes: 45
     permissions:
       contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        rid:
-          - win-x64
-          - win-arm64
-          - linux-x64
-          - linux-arm64
-          - osx-x64
-          - osx-arm64
-
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v7
-
-      - name: Set up .NET 10
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Build release package
-        run: ./publish.sh "${{ matrix.rid }}" "${{ needs.version.outputs.number }}"
-
-      - name: Verify Linux x64 package
-        if: matrix.rid == 'linux-x64'
-        run: .github/scripts/verify-linux-package.sh "artifacts/PlanarGeometryStudio-v${{ needs.version.outputs.number }}-linux-x64.tar.gz"
-
-      - name: Upload release package
-        uses: actions/upload-artifact@v7
-        with:
-          name: release-${{ matrix.rid }}
-          path: artifacts/PlanarGeometryStudio-v${{ needs.version.outputs.number }}-${{ matrix.rid }}.*
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 0
+    uses: ./.github/workflows/package-build.yaml
+    with:
+      version: ${{ needs.version.outputs.number }}
 
   publish:
     name: Publish v${{ needs.version.outputs.number }}

@@ -77,6 +77,8 @@ mkdir -p \
 cp "$SCRIPT_DIR/LICENSE" "$APP_DIR/LICENSE.txt"
 cp "$SCRIPT_DIR/README.md" "$APP_DIR/README.md"
 cp "$SCRIPT_DIR/CHANGELOG.md" "$APP_DIR/CHANGELOG.md"
+cp "$SCRIPT_DIR/TERMS.md" "$APP_DIR/TERMS.md"
+cp "$SCRIPT_DIR/packaging/assets/studio.svg" "$APP_DIR/studio.svg"
 
 if [[ "$RID" == osx-* ]]; then
     BUNDLE_DIR="$STAGING_DIR/Planar Geometry Studio.app"
@@ -84,6 +86,16 @@ if [[ "$RID" == osx-* ]]; then
     mkdir -p "$MACOS_DIR" "$BUNDLE_DIR/Contents/Resources"
     cp -R "$APP_DIR/." "$MACOS_DIR/"
     chmod +x "$MACOS_DIR/PlanarGeometryStudio"
+    if command -v sips >/dev/null && command -v iconutil >/dev/null; then
+        ICONSET_DIR="$STAGING_DIR/Studio.iconset"
+        mkdir -p "$ICONSET_DIR"
+        for SIZE in 16 32 128 256 512; do
+            sips -z "$SIZE" "$SIZE" "$SCRIPT_DIR/packaging/assets/studio.png" --out "$ICONSET_DIR/icon_${SIZE}x${SIZE}.png" >/dev/null
+            DOUBLE=$((SIZE * 2))
+            sips -z "$DOUBLE" "$DOUBLE" "$SCRIPT_DIR/packaging/assets/studio.png" --out "$ICONSET_DIR/icon_${SIZE}x${SIZE}@2x.png" >/dev/null
+        done
+        iconutil -c icns "$ICONSET_DIR" -o "$BUNDLE_DIR/Contents/Resources/Studio.icns"
+    fi
 
     cat > "$BUNDLE_DIR/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -95,14 +107,21 @@ if [[ "$RID" == osx-* ]]; then
   <key>CFBundleIdentifier</key><string>com.nikolaveselinov.planargeometrystudio</string>
   <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
   <key>CFBundleName</key><string>Planar Geometry Studio</string>
+  <key>CFBundleIconFile</key><string>Studio.icns</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$VERSION</string>
-  <key>LSMinimumSystemVersion</key><string>12.0</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict>
 </plist>
 PLIST
+
+    if command -v codesign >/dev/null; then
+        # Ad-hoc signing is required by native Apple Silicon executables. This is
+        # not Developer ID signing or notarization; see packaging/README.md.
+        codesign --force --deep --sign - "$BUNDLE_DIR"
+    fi
 
     ASSET_PATH="$ARTIFACT_DIR/$ASSET_STEM.zip"
     rm -f "$ASSET_PATH"

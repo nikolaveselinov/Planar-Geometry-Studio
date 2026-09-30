@@ -1,6 +1,7 @@
 using GeoGen.DesktopApp.Models;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace GeoGen.DesktopApp.Services;
 
@@ -154,7 +155,11 @@ public sealed class WorkspaceManager
         if (!File.Exists(settingsSource))
             throw new FileNotFoundException("The drawing settings file is missing.", settingsSource);
 
-        File.Copy(settingsSource, Path.Combine(figureRoot, "settings.json"), overwrite: true);
+        var drawerSettings = JsonNode.Parse(await File.ReadAllTextAsync(settingsSource, cancellationToken));
+        var metaPost = DrawingToolEnvironment.FindExecutable("mpost", "miktex-mpost");
+        if (metaPost is not null && drawerSettings?["MetapostDrawerSettings"] is JsonObject metaPostSettings)
+            metaPostSettings["MetapostCompilationCommand"] = metaPost;
+        await File.WriteAllTextAsync(Path.Combine(figureRoot, "settings.json"), drawerSettings!.ToJsonString(JsonOptions), cancellationToken);
         return figureRoot;
     }
 

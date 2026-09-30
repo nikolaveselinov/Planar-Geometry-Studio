@@ -12,15 +12,19 @@ Download the [latest release](https://github.com/nikolaveselinov/Planar-Geometry
 
 | Platform | x64 | Arm64 |
 |---|---|---|
-| Windows | `win-x64.zip` | `win-arm64.zip` |
-| Linux | `linux-x64.tar.gz` | `linux-arm64.tar.gz` |
-| macOS | `osx-x64.zip` | `osx-arm64.zip` |
+| Windows | `win-x64-setup.exe` | `win-arm64-setup.exe` |
+| Linux | `linux-x64.deb`, `.rpm`, or `.run` | `linux-arm64.deb`, `.rpm`, or `.run` |
+| macOS | `osx-x64.pkg` or `.dmg` | `osx-arm64.pkg` or `.dmg` |
 
-Extract the archive. Run `PlanarGeometryStudio.exe` on Windows, `PlanarGeometryStudio` on Linux, or open `Planar Geometry Studio.app` on macOS. The packages include the application, GeoGen, and the .NET runtime.
+Asset names begin with `PlanarGeometryStudio-v<version>-`. Download the installer for your platform and processor. Windows setup offers Program Files or per-user installation, Start Menu and desktop shortcuts, optional drawing tools, and an uninstaller. macOS installs in Applications. On Linux, install `.deb` with apt, `.rpm` with dnf, or run `bash <filename>.run` for a per-user setup wizard.
 
-The macOS builds are unsigned. On first launch, right-click the app and select **Open**.
+The packages include the application, GeoGen, and the .NET runtime. Portable `.zip` and `.tar.gz` archives remain available. Installer details and commands are in the [installation guide](packaging/README.md).
 
-Drawing figures requires MetaPost from [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). If no PDF converter is installed, figures are saved as EPS files.
+On first launch, **Studio Setup** detects existing drawing tools and offers automatic installation of MiKTeX on Windows, BasicTeX on macOS, or TeX Live on Linux, including MetaPost and PDF export. It is also available from **Help → Studio Setup**. Generation and proofs work without these optional downloads. See the [terms and setup notes](TERMS.md).
+
+Studio checks for new stable releases in the background on every launch. A notice links to the installer for your platform. Manage automatic checks in Studio Setup, or select **Help → Check for Updates**. Your configurations and results stay local.
+
+Windows installers are unsigned; macOS apps are ad-hoc signed, with unsigned packages. OS security prompts may appear until publisher certificates are configured.
 
 ## Use
 
