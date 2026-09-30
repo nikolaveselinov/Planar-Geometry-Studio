@@ -1,0 +1,109 @@
+name: Native packages
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  package:
+    name: Installers ${{ matrix.rid }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            runner: windows-latest
+          - rid: win-arm64
+            runner: windows-latest
+          - rid: linux-x64
+            runner: ubuntu-24.04
+          - rid: linux-arm64
+            runner: ubuntu-24.04-arm
+          - rid: osx-x64
+            runner: macos-15-intel
+          - rid: osx-arm64
+            runner: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install Windows packaging tools
+        if: startsWith(matrix.rid, 'win-')
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed.' }
+
+      - name: Publish Windows application
+        if: startsWith(matrix.rid, 'win-')
+        shell: pwsh
+        run: ./publish.ps1 -Runtime '${{ matrix.rid }}' -Version '${{ inputs.version }}'
+
+      - name: Build Windows setup executable
+        if: startsWith(matrix.rid, 'win-')
+        shell: pwsh
+        run: ./packaging/windows/build-installer.ps1 -Runtime '${{ matrix.rid }}' -Version '${{ inputs.version }}'
+
+      - name: Verify Windows install, upgrade, and uninstall
+        if: matrix.rid == 'win-x64'
+        shell: pwsh
+        run: ./.github/scripts/verify-windows-installer.ps1 -Installer (Resolve-Path 'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-win-x64-setup.exe')
+
+      - name: Install Linux packaging tools
+        if: startsWith(matrix.rid, 'linux-')
+        run: sudo apt-get update && sudo apt-get install -y rpm ripgrep
+
+      - name: Publish Unix application
+        if: "!startsWith(matrix.rid, 'win-')"
+        run: ./publish.sh '${{ matrix.rid }}' '${{ inputs.version }}'
+
+      - name: Build Linux installers
+        if: startsWith(matrix.rid, 'linux-')
+        run: ./packaging/linux/build-installers.sh '${{ matrix.rid }}' '${{ inputs.version }}'
+
+      - name: Verify Linux packages and installed engine
+        if: startsWith(matrix.rid, 'linux-')
+        run: |
+          .github/scripts/verify-linux-package.sh 'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}.tar.gz'
+          .github/scripts/verify-linux-installers.sh '${{ matrix.rid }}'
+
+      - name: Build macOS package and disk image
+        if: startsWith(matrix.rid, 'osx-')
+        run: ./packaging/macos/build-installer.sh '${{ matrix.rid }}' '${{ inputs.version }}'
+
+      - name: Verify macOS installation
+        if: startsWith(matrix.rid, 'osx-')
+        run: |
+          sudo installer -pkg 'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}.pkg' -target /
+          test -x '/Applications/Planar Geometry Studio.app/Contents/MacOS/PlanarGeometryStudio'
+          test -f '/Applications/Planar Geometry Studio.app/Contents/MacOS/setup/drawing-tools.sh'
+          codesign --verify --deep '/Applications/Planar Geometry Studio.app'
+          engine='/Applications/Planar Geometry Studio.app/Contents/MacOS/tools/engine'
+          work="$(mktemp -d)"
+          cp -R "$engine/." "$work/"
+          cd "$work"
+          GEOGEN_NO_PAUSE=1 "$engine/GeoGen"
+          test -s Examples/Output/JsonOutput/output.json
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.rid }}
+          path: artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0

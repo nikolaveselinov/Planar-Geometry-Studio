@@ -62,8 +62,11 @@ $PublishArgs = @(
 Write-Host "Publishing Planar Geometry Studio $Version for $Runtime"
 
 & dotnet publish (Join-Path $SourceDir "Launchers\GeoGen.DesktopApp\GeoGen.DesktopApp.csproj") @PublishArgs --output $AppDir
+if ($LASTEXITCODE -ne 0) { throw 'Desktop publish failed.' }
 & dotnet publish (Join-Path $SourceDir "Launchers\GeoGen.MainLauncher\GeoGen.MainLauncher.csproj") @PublishArgs --output (Join-Path $AppDir "tools\engine")
+if ($LASTEXITCODE -ne 0) { throw 'Engine publish failed.' }
 & dotnet publish (Join-Path $SourceDir "Launchers\GeoGen.DrawingLauncher\GeoGen.DrawingLauncher.csproj") @PublishArgs --output (Join-Path $AppDir "tools\drawer")
+if ($LASTEXITCODE -ne 0) { throw 'Drawing-tool publish failed.' }
 
 $DrawerData = Join-Path $AppDir "tools\drawer\Data"
 New-Item -ItemType Directory -Force -Path $DrawerData | Out-Null
@@ -90,6 +93,8 @@ Copy-Item -Recurse -Force (Join-Path $SourceDir "Launchers\GeoGen.DrawingLaunche
 Copy-Item (Join-Path $ScriptDir "LICENSE") (Join-Path $AppDir "LICENSE.txt")
 Copy-Item (Join-Path $ScriptDir "README.md") (Join-Path $AppDir "README.md")
 Copy-Item (Join-Path $ScriptDir "CHANGELOG.md") (Join-Path $AppDir "CHANGELOG.md")
+Copy-Item (Join-Path $ScriptDir "TERMS.md") (Join-Path $AppDir "TERMS.md")
+Copy-Item (Join-Path $ScriptDir "packaging\assets\studio.svg") (Join-Path $AppDir "studio.svg")
 
 if ($Runtime.StartsWith("osx-")) {
     $BundleDir = Join-Path $StagingDir "Planar Geometry Studio.app"
@@ -120,6 +125,7 @@ if ($Runtime.StartsWith("osx-")) {
     $AssetPath = Join-Path $ArtifactDir "$AssetStem.tar.gz"
     if (Test-Path $AssetPath) { Remove-Item -Force $AssetPath }
     & tar -C $StagingDir -czf $AssetPath PlanarGeometryStudio
+    if ($LASTEXITCODE -ne 0) { throw 'Archive creation failed.' }
 } else {
     $AssetPath = Join-Path $ArtifactDir "$AssetStem.zip"
     if (Test-Path $AssetPath) { Remove-Item -Force $AssetPath }

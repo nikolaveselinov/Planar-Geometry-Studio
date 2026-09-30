@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         };
 
         Closing += OnClosing;
+        Opened += async (_, _) => await viewModel.InitializeStudioAsync();
         Closed += (_, _) => viewModel.Shutdown();
     }
 

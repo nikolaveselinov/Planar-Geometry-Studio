@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GeoGen.DesktopApp.ViewModels"
+        x:Class="GeoGen.DesktopApp.Views.SetupWindow" x:DataType="vm:SetupViewModel"
+        Title="Studio Setup" Width="790" Height="760" MinWidth="650" MinHeight="620"
+        Background="#0A0F1D" WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="28">
+        <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,20">
+            <TextBlock Text="△  STUDIO SETUP" FontSize="12" FontWeight="Bold" Foreground="#A99EFF" LetterSpacing="2" />
+            <TextBlock Text="From conjecture to figure." FontSize="29" FontWeight="SemiBold" Foreground="#F7F8FC" />
+            <TextBlock Text="A working studio, with everything in its place." Foreground="#8E9AAF" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,16,0,0">
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="#C7D0E0" />
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstalling}" Height="3" />
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Content="Stop setup" Command="{Binding CancelInstallCommand}" IsVisible="{Binding IsInstalling}" />
+                <Button Content="Start studio" Command="{Binding ContinueCommand}" Background="#6D5EF7" Foreground="White" Padding="24,10" />
+            </StackPanel>
+        </StackPanel>
+        <TabControl x:Name="SetupTabs">
+            <TabItem Header="01 · Workspace">
+                <ScrollViewer>
+                    <StackPanel Spacing="18" Margin="4,18,4,0">
+                        <Border CornerRadius="12" Background="#101829" Padding="20">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Ready to explore" FontSize="19" FontWeight="SemiBold" />
+                                <TextBlock Text="The geometry engine and .NET runtime are included. No account or developer tools are needed." TextWrapping="Wrap" Foreground="#C7D0E0" />
+                                <TextBlock Text="Your runs live in Documents/Planar Geometry Studio/Runs. Updating or uninstalling Studio preserves your work." TextWrapping="Wrap" Foreground="#8E9AAF" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="Automatic updates" FontSize="19" FontWeight="SemiBold" />
+                        <CheckBox Content="Check for a new stable version every time Studio opens" IsChecked="{Binding CheckForUpdates}" />
+                        <TextBlock Text="Checks run in the background. A small notice links to the installer for your platform. Nothing is installed until you choose it; offline launches keep working." TextWrapping="Wrap" Foreground="#8E9AAF" />
+                        <TextBlock Text="Next: open Drawing tools to enable figure rendering, or start working now." TextWrapping="Wrap" Foreground="#A99EFF" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="02 · Drawing tools">
+                <ScrollViewer>
+                    <StackPanel Spacing="12" Margin="4,18,4,0">
+                        <TextBlock Text="{Binding PlatformTools}" FontSize="19" FontWeight="SemiBold" />
+                        <TextBlock Text="Existing tools are reused. Setup downloads only missing components. You may see a system permission prompt." TextWrapping="Wrap" Foreground="#8E9AAF" />
+                        <Border Background="#101829" Padding="16" CornerRadius="10">
+                            <TextBlock Text="{Binding ToolStatus}" TextWrapping="Wrap" FontFamily="monospace" FontSize="12" />
+                        </Border>
+                        <WrapPanel>
+                            <Button Content="MiKTeX license" Command="{Binding MiKTeXLicenseCommand}" Margin="0,0,8,0" />
+                            <Button Content="TeX Live license" Command="{Binding TeXLicenseCommand}" Margin="0,0,8,0" />
+                            <Button Content="Ghostscript license" Command="{Binding GhostscriptLicenseCommand}" />
+                        </WrapPanel>
+                        <CheckBox IsChecked="{Binding DrawingConsent}" IsEnabled="{Binding IsIdle}">
+                            <TextBlock Text="Install the recommended drawing tools under their respective licenses. I have reviewed the third-party setup notes." TextWrapping="Wrap" />
+                        </CheckBox>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Content="Set up drawing tools" Command="{Binding InstallCommand}" Background="#6D5EF7" Foreground="White" />
+                            <Button Content="Check again" Command="{Binding RefreshCommand}" />
+                        </StackPanel>
+                        <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" MaxHeight="200" FontFamily="monospace" FontSize="12" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="03 · Terms &amp; privacy">
+                <DockPanel Margin="4,18,4,0">
+                    <Button DockPanel.Dock="Bottom" Content="Read the complete AGPL license" Command="{Binding LicenseCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" />
+                    <TextBox Text="{Binding Terms}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" FontSize="13" />
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

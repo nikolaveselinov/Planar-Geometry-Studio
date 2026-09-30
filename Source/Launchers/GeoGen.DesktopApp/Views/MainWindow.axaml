@@ -80,10 +80,20 @@
             <MenuItem Header="_Help">
                 <MenuItem Header="_Quick Start" Command="{Binding QuickStartCommand}" />
                 <MenuItem Header="Input _Reference" Command="{Binding ReferenceCommand}" />
+                <MenuItem Header="Studio _Setup…" Command="{Binding StudioSetupCommand}" />
+                <MenuItem Header="Check for _Updates" Command="{Binding CheckForUpdatesCommand}" />
                 <Separator />
                 <MenuItem Header="_About" Command="{Binding AboutCommand}" />
             </MenuItem>
         </Menu>
+
+        <Border DockPanel.Dock="Top" Background="#231E48" Padding="20,10" IsVisible="{Binding ShowUpdateNotice}">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                <TextBlock Text="{Binding UpdateNotice}" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="#E6EAF2" />
+                <Button Grid.Column="1" Content="Download installer" Command="{Binding DownloadUpdateCommand}" IsVisible="{Binding HasUpdate}" />
+                <Button Grid.Column="2" Content="Dismiss" Command="{Binding DismissUpdateCommand}" />
+            </Grid>
+        </Border>
 
         <Border DockPanel.Dock="Top" Background="#0D1424" BorderBrush="#202A3E"
                 BorderThickness="0,0,0,1" Padding="20,14">

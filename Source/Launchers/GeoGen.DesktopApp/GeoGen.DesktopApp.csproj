@@ -6,12 +6,13 @@
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AssemblyName>PlanarGeometryStudio</AssemblyName>
+		<ApplicationIcon>../../../packaging/assets/studio.ico</ApplicationIcon>
 		<RootNamespace>GeoGen.DesktopApp</RootNamespace>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-		<VersionPrefix>1.1.2</VersionPrefix>
-		<AssemblyVersion>1.1.2.0</AssemblyVersion>
-		<FileVersion>1.1.2.0</FileVersion>
+		<VersionPrefix>1.2.0</VersionPrefix>
+		<AssemblyVersion>1.2.0.0</AssemblyVersion>
+		<FileVersion>1.2.0.0</FileVersion>
 		<Authors>Nikola Veselinov</Authors>
 		<Description>A desktop application for generating, proving, ranking, and drawing planar geometry theorems.</Description>
 		<RepositoryUrl>https://github.com/nikolaveselinov/Planar-Geometry-Studio</RepositoryUrl>
@@ -23,6 +24,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="../../../TERMS.md" LogicalName="GeoGen.DesktopApp.Terms.md" />
+		<Content Include="../../../packaging/setup/*" Link="setup/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="Avalonia.Themes.Fluent" />

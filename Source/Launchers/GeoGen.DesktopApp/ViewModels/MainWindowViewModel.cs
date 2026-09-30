@@ -125,6 +125,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         AboutCommand = new RelayCommand(_ => ShowAbout());
         QuickStartCommand = new RelayCommand(_ => ShowQuickStart());
         ReferenceCommand = new RelayCommand(_ => ShowReference());
+        InitializeSetupCommands();
     }
 
     public string InputText
@@ -240,6 +241,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
+        _lifecycleCancellation.Cancel();
+        _lifecycleCancellation.Dispose();
         _operationCancellation?.Cancel();
         _processRunner.CancelCurrent();
         _operationCancellation?.Dispose();
@@ -627,6 +630,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         (GenerateCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (StopCommand as RelayCommand)?.RaiseCanExecuteChanged();
         (FiguresCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (StudioSetupCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
     }
 
     private void MarkCurrentInputSaved()

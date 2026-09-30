@@ -39,6 +39,7 @@ public sealed class ProcessRunner
 
         startInfo.Environment["GEOGEN_NO_PAUSE"] = "1";
         startInfo.Environment["DOTNET_NOLOGO"] = "1";
+        startInfo.Environment["PATH"] = DrawingToolEnvironment.BuildPath();
 
         using var process = new Process { StartInfo = startInfo };
         lock (_processLock)

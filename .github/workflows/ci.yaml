@@ -44,26 +44,18 @@ jobs:
         working-directory: Source
         run: dotnet test GeoGen.sln --configuration Release --no-build --verbosity normal
 
-  package-smoke-test:
-    name: Package smoke test
+  version:
+    name: Read package version
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
+    outputs:
+      number: ${{ steps.read.outputs.number }}
     steps:
-      - name: Check out source
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+      - id: read
+        run: echo "number=$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
 
-      - name: Set up .NET 10
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Build Linux package
-        run: ./publish.sh linux-x64
-
-      - name: Verify package contents
-        run: |
-          set -euo pipefail
-          version="$(tr -d '[:space:]' < VERSION)"
-          archive="artifacts/PlanarGeometryStudio-v${version}-linux-x64.tar.gz"
-          .github/scripts/verify-linux-package.sh "$archive"
+  native-installers:
+    needs: [version, build-and-test]
+    uses: ./.github/workflows/package-build.yaml
+    with:
+      version: ${{ needs.version.outputs.number }}

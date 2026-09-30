@@ -114,7 +114,7 @@ public sealed partial class FigureConverter
             try
             {
                 var result = await _processRunner.RunAsync(
-                    attempt.Command,
+                    DrawingToolEnvironment.FindExecutable(attempt.Command) ?? attempt.Command,
                     attempt.Arguments,
                     workingDirectory,
                     standardInputLines: null,
