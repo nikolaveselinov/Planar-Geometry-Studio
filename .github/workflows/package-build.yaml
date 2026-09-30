@@ -56,7 +56,19 @@ jobs:
       - name: Build Windows setup executable
         if: startsWith(matrix.rid, 'win-')
         shell: pwsh
-        run: ./packaging/windows/build-installer.ps1 -Runtime '${{ matrix.rid }}' -Version '${{ inputs.version }}'
+        run: ./packaging/windows/build-installer.ps1 -Runtime '${{ matrix.rid }}' -Version '${{ inputs.version }}' -SelfSign
+
+      - name: Verify Windows publisher signatures and file metadata
+        if: startsWith(matrix.rid, 'win-')
+        shell: pwsh
+        run: |
+          $app = 'artifacts/staging/${{ matrix.rid }}/PlanarGeometryStudio'
+          ./.github/scripts/verify-windows-signatures.ps1 -Files @(
+            'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}-setup.exe',
+            "$app/PlanarGeometryStudio.exe", "$app/tools/engine/GeoGen.exe", "$app/tools/drawer/GeoGen.DrawingLauncher.exe")
+          if ((Get-Item "$app/PlanarGeometryStudio.exe").VersionInfo.CompanyName -ne 'Nikola Veselinov') {
+            throw 'Executable publisher metadata is missing.'
+          }
 
       - name: Verify Windows install, upgrade, and uninstall
         if: matrix.rid == 'win-x64'

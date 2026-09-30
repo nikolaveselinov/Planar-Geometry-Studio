@@ -53,6 +53,10 @@ CloseApplications=yes
 RestartApplications=no
 UsePreviousTasks=yes
 SetupLogging=yes
+#ifdef SelfSign
+SignTool=studio
+SignedUninstaller=yes
+#endif
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: unchecked

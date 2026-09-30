@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1] - 2026-09-30
+
+- Windows installers, uninstallers, and GeoGen executables carry a self-signed Authenticode signature named Nikola Veselinov.
+- Explicit Nikola Veselinov company metadata in the desktop executable.
+- Signatures identify the claimed author; Windows security warnings remain because the certificates are self-signed, not publicly trusted.
+- Verify signatures, installed uninstallers, publisher metadata, and rejection of modified executables in Windows packaging CI.
+
 ## [1.2.0] - 2026-09-30
 
 - Native Windows setup executables, macOS packages/disk images, and Linux deb/rpm/per-user installers for x64 and ARM64.
