@@ -94,3 +94,7 @@ On Windows, use `./publish.ps1 -Runtime win-x64`.
 ## License
 
 [GNU AGPL v3.0](LICENSE). The GeoGen engine was created by [Patrik Bak](https://github.com/PatrikBak).
+
+## Download signatures
+
+macOS and Linux downloads include a matching `.asc` signature naming **Nikola Veselinov**, a runtime-specific `*-publisher.asc` public key, and `*-signatures.txt` verification instructions. Portable archives remain available and signed too. These self-declared signatures check download integrity; they do not establish a publicly trusted identity or remove Apple security warnings. See [verification details](packaging/README.md#macos-and-linux-download-signatures).

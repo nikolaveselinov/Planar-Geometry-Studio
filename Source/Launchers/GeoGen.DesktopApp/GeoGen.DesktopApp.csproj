@@ -10,9 +10,9 @@
 		<RootNamespace>GeoGen.DesktopApp</RootNamespace>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-		<VersionPrefix>1.2.1</VersionPrefix>
-		<AssemblyVersion>1.2.1.0</AssemblyVersion>
-		<FileVersion>1.2.1.0</FileVersion>
+		<VersionPrefix>1.2.2</VersionPrefix>
+		<AssemblyVersion>1.2.2.0</AssemblyVersion>
+		<FileVersion>1.2.2.0</FileVersion>
 		<Authors>Nikola Veselinov</Authors>
 		<Company>Nikola Veselinov</Company>
 		<Copyright>Copyright © Nikola Veselinov</Copyright>

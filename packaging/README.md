@@ -131,3 +131,33 @@ architectures install the native `.pkg`, verify bundle signing, and run the engi
 Windows ARM64 packages are cross-built on the Windows x64 runner; their native
 execution and the internet-dependent drawing setup still merit testing on end-user
 machines. Shared drawing tools are never removed by the Studio uninstaller.
+
+### macOS and Linux download signatures
+
+Every macOS `.pkg`, `.dmg`, and portable `.zip`, and every Linux `.deb`,
+`.rpm`, `.run`, and portable `.tar.gz` has a matching detached `.asc` signature.
+The signing key identifies **Nikola Veselinov (Planar Geometry Studio self-signed release)**.
+Each runtime also publishes `*-publisher.asc` and `*-signatures.txt`, including
+its public key fingerprint. Install GnuPG, download those files and the asset
+from the official release, then verify (example):
+
+```sh
+gpg --import PlanarGeometryStudio-v1.2.2-osx-arm64-publisher.asc
+gpg --verify PlanarGeometryStudio-v1.2.2-osx-arm64.pkg.asc PlanarGeometryStudio-v1.2.2-osx-arm64.pkg
+```
+
+Verification needs no administrator rights. A good signature proves that bytes
+match the supplied key; the author name is self-declared and is not a verified
+publisher identity. A compromised release page could replace the download, key,
+and signature together. Build jobs generate separate ephemeral RSA 3072 keys,
+sign with SHA-256, verify in a separate public-only keyring, reject altered files,
+and delete private keys before artifact upload. Keys differ by runtime and build;
+there is no persistent publisher key or identity continuity between releases.
+
+These are detached download signatures, not embedded Apple Installer or RPM
+signatures. macOS bundles retain their ad-hoc code signatures; packages are not
+Developer ID signed or notarized. Gatekeeper warnings and package-manager trust
+rules remain. No installer imports keys or changes system trust stores.
+
+To reproduce, build the portable archive and installers first, install GnuPG,
+then run `./packaging/sign-downloads.sh osx-arm64` (or the matching Linux RID).
