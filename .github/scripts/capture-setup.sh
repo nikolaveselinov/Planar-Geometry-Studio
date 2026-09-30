@@ -6,7 +6,7 @@ output="${2:?Pass image destination}"
 pid=$!
 trap 'kill "$pid" 2>/dev/null || true' EXIT
 window=''
-for attempt in {1..40}; do
+for attempt in {1..160}; do
     window="$(xdotool search --onlyvisible --name '^Studio Setup$' 2>/dev/null | head -1 || true)"
     [[ -n "$window" ]] && break
     kill -0 "$pid" || { cat "$output.log"; exit 1; }

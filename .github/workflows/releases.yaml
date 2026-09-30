@@ -2,10 +2,16 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      refresh_existing:
+        description: Rebuild and replace the current release after all checks pass
+        type: boolean
+        default: false
   push:
     branches: [master]
     paths:
       - VERSION
+      - .github/workflows/releases.yaml
 
 concurrency:
   group: release
@@ -23,6 +29,7 @@ jobs:
       contents: read
     outputs:
       number: ${{ steps.read.outputs.number }}
+      refresh: ${{ steps.read.outputs.refresh }}
 
     steps:
       - name: Check out source
@@ -33,6 +40,8 @@ jobs:
       - name: Read VERSION
         id: read
         shell: bash
+        env:
+          REFRESH_RELEASE: ${{ inputs.refresh_existing || contains(github.event.head_commit.message, '[refresh release]') }}
         run: |
           set -euo pipefail
           version="$(tr -d '[:space:]' < VERSION)"
@@ -53,12 +62,13 @@ jobs:
             exit 1
           fi
 
-          if git show-ref --verify --quiet "refs/tags/v$version"; then
+          if git show-ref --verify --quiet "refs/tags/v$version" && [[ "$REFRESH_RELEASE" != true ]]; then
             echo "Tag v$version already exists. Releases are not overwritten." >&2
             exit 1
           fi
 
           echo "number=$version" >> "$GITHUB_OUTPUT"
+          echo "refresh=$REFRESH_RELEASE" >> "$GITHUB_OUTPUT"
 
   verify:
     name: Verify release commit
@@ -114,33 +124,66 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: release-*
-          path: release-assets
+          path: release-staging
           merge-multiple: true
 
-      - name: Create checksums
-        working-directory: release-assets
-        shell: bash
-        run: sha256sum PlanarGeometryStudio-* | sort -k2 > SHA256SUMS
+      - name: Prepare downloads and optional verification archive
+        run: python3 .github/scripts/prepare-release-assets.py --version '${{ needs.version.outputs.number }}'
 
       - name: Prepare release notes
         shell: bash
         run: |
-          awk '
-            /^## \[/ {
-              if (found) exit
-              found = 1
-            }
-            found { print }
-          ' CHANGELOG.md > release-assets/RELEASE_NOTES.md
+          notes="release-notes/v${{ needs.version.outputs.number }}.md"
+          if [[ -f "$notes" ]]; then
+            cp "$notes" RELEASE_NOTES.md
+          else
+            awk '/^## \[/{if(found) exit; found=1} found{print}' CHANGELOG.md > RELEASE_NOTES.md
+          fi
 
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: v${{ needs.version.outputs.number }}
-          target_commitish: ${{ github.sha }}
-          name: Planar Geometry Studio v${{ needs.version.outputs.number }}
-          body_path: release-assets/RELEASE_NOTES.md
-          fail_on_unmatched_files: true
-          files: |
-            release-assets/PlanarGeometryStudio-*
-            release-assets/SHA256SUMS
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.number }}
+          REFRESH_RELEASE: ${{ needs.version.outputs.refresh }}
+        run: |
+          set -euo pipefail
+          tag="v$VERSION"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            [[ "$REFRESH_RELEASE" == true ]] || { echo 'Release replacement requires an explicit refresh.' >&2; exit 1; }
+            # Validated replacement packages are ready before changing existing downloads.
+            gh release upload "$tag" release-assets/* --clobber --repo "$GITHUB_REPOSITORY"
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$tag" -f sha="$GITHUB_SHA" -F force=true >/dev/null
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --title "Planar Geometry Studio $tag" --notes-file RELEASE_NOTES.md --latest
+            # Remove only the old loose verification files; installer formats stay available.
+            gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" > /tmp/studio-release.json
+            python3 - <<'PYMETA' > /tmp/studio-obsolete-assets.txt
+          import json, os
+          prefix = f'PlanarGeometryStudio-v{os.environ["VERSION"]}-'
+          with open('/tmp/studio-release.json') as stream:
+              assets = json.load(stream)['assets']
+          for asset in assets:
+              name = asset['name']
+              if name.startswith(prefix) and (name.endswith('.asc') or name.endswith('-signatures.txt')):
+                  print(asset['id'])
+          PYMETA
+            while read -r id; do
+              gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$id"
+            done < /tmp/studio-obsolete-assets.txt
+          else
+            gh release create "$tag" release-assets/* --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" --title "Planar Geometry Studio $tag" --notes-file RELEASE_NOTES.md --latest
+          fi
+
+      - name: Update previous release summaries
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for notes in release-notes/*.md; do
+            tag="$(basename "$notes" .md)"
+            [[ "$tag" == 'v${{ needs.version.outputs.number }}' ]] && continue
+            if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes-file "$notes"
+            fi
+          done

@@ -26,6 +26,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="../../Library/GeoGen.Core/GeoGen.Core.csproj" />
+		<EmbeddedResource Include="Services/ConstructionDescriptions.json" LogicalName="GeoGen.DesktopApp.ConstructionDescriptions.json" />
 		<EmbeddedResource Include="../../../TERMS.md" LogicalName="GeoGen.DesktopApp.Terms.md" />
 		<Content Include="../../../packaging/setup/*" Link="setup/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 		<PackageReference Include="Avalonia" />

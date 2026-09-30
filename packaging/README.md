@@ -137,13 +137,14 @@ machines. Shared drawing tools are never removed by the Studio uninstaller.
 Every macOS `.pkg`, `.dmg`, and portable `.zip`, and every Linux `.deb`,
 `.rpm`, `.run`, and portable `.tar.gz` has a matching detached `.asc` signature.
 The signing key identifies **Nikola Veselinov (Planar Geometry Studio self-signed release)**.
-Each runtime also publishes `*-publisher.asc` and `*-signatures.txt`, including
-its public key fingerprint. Install GnuPG, download those files and the asset
+The optional `*-verification.zip` release asset collects the matching `.asc`
+signatures, runtime-specific `*-publisher.asc` public keys, and verification notes,
+including public key fingerprints. Extract it alongside the downloaded asset. Install GnuPG, download those files and the asset
 from the official release, then verify (example):
 
 ```sh
-gpg --import PlanarGeometryStudio-v1.2.3-osx-arm64-publisher.asc
-gpg --verify PlanarGeometryStudio-v1.2.3-osx-arm64.pkg.asc PlanarGeometryStudio-v1.2.3-osx-arm64.pkg
+gpg --import verification/PlanarGeometryStudio-v1.2.3-osx-arm64-publisher.asc
+gpg --verify verification/PlanarGeometryStudio-v1.2.3-osx-arm64.pkg.asc PlanarGeometryStudio-v1.2.3-osx-arm64.pkg
 ```
 
 Verification needs no administrator rights. A good signature proves that bytes
@@ -161,3 +162,17 @@ rules remain. No installer imports keys or changes system trust stores.
 
 To reproduce, build the portable archive and installers first, install GnuPG,
 then run `./packaging/sign-downloads.sh osx-arm64` (or the matching Linux RID).
+
+## Release presentation and refresh
+
+`prepare-release-assets.py` keeps 18 platform downloads visible and collects all
+optional signature metadata in one verification ZIP, alongside `SHA256SUMS`.
+User-facing release notes live in `release-notes/v<version>.md`; the changelog is the
+fallback for new versions.
+
+Normal releases never overwrite an existing version. An explicitly requested
+refresh can be run with the Release workflow's `refresh_existing` option, or a
+master commit containing `[refresh release]` that changes the release workflow.
+All builds and tests finish before assets are replaced; a refresh updates the tag
+to the rebuilt source commit and removes superseded loose verification files.
+Users already running the same version can download the refreshed build manually.

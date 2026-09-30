@@ -6,10 +6,13 @@ internal static class HelpContent
         """
         QUICK START
 
-        1. Write an input configuration.
+        1. Try the starter triangle configuration, or write your own.
         2. Press F5 or select Generate.
         3. Select Open Results to view the output.
         4. Select Figures to draw the latest result.
+
+        Browse Constructions (Ctrl+K) to search the complete catalog, copy a call,
+        or enable a construction for generation. The starter enables only a small set.
 
         Each run is stored in a separate folder under:
 
@@ -60,60 +63,24 @@ internal static class HelpContent
           LineAndPoint: l, A                a line and a point not on it
           LineAndTwoPoints: l, A, B         a line and two points not on it
 
-        Predefined constructions
+        Construction browser
 
-          CenterOfCircle(c)
-          Circumcircle(A, B, C)
-          CircleWithCenterThroughPoint(A, B)
-          CircleWithRadius(A, B, C)          center A, radius |BC|
-          InternalAngleBisector(A, B, C)
-          IntersectionOfLines(l, m)
-          LineFromPoints(A, B)
-          Midpoint(A, B)
-          ParallelLine(A, l)
-          PerpendicularLine(A, l)
-          PerpendicularProjection(A, l)
-          PointReflection(A, B)
-          SecondIntersectionOfCircleAndLineFromPoints(A, B, C, D)
-          SecondIntersectionOfTwoCircumcircles(A, B, C, D, E)
+          Select Constructions above the input editor, or press Ctrl+K.
+          Search by name or description and filter by the type of object created.
+          Each entry shows its arguments, example call, and geometric meaning.
+          Enable in input adds its name to the generation list without duplicates.
+          Copy call copies an example to adapt in your initial configuration.
 
-        Composed constructions
-
-          Centroid(A, B, C)
-          CircleWithDiameter(A, B)
-          Circumcenter(A, B, C)
-          Excenter(A, B, C)
-          Excircle(A, B, C)
-          ExternalAngleBisector(A, B, C)
-          Incenter(A, B, C)
-          Incircle(A, B, C)
-          IntersectionOfLineAndLineFromPoints(l, A, B)
-          IntersectionOfLinesFromPoints(A, B, C, D)
-          IsoscelesTrapezoidPoint(A, B, C)
-          LineThroughCircumcenter(A, B, C)
-          Median(A, B, C)
-          Midline(A, B, C)
-          MidpointOfArc(A, B, C)
-          MidpointOfOppositeArc(A, B, C)
-          NinePointCircle(A, B, C)
-          OppositePointOnCircumcircle(A, B, C)
-          Orthocenter(A, B, C)
-          ParallelLineToLineFromPoints(A, B, C)
-          ParallelogramPoint(A, B, C)
-          PerpendicularBisector(A, B)
-          PerpendicularLineAtPointOfLine(A, B)
-          PerpendicularLineToLineFromPoints(A, B, C)
-          PerpendicularProjectionOnLineFromPoints(A, B, C)
-          ReflectionInLine(l, A)
-          ReflectionInLineFromPoints(A, B, C)
-          TangentLine(A, B, C)
+          The Constructions section controls which tools generate new objects.
+          Initial configuration definitions may use any supported construction.
+          Object limits count new objects across the whole run, not per step.
 
         Parameters
 
           Iterations                     number of generation steps
-          MaximalPoints                  maximum new points per step
-          MaximalLines                   maximum new lines per step
-          MaximalCircles                 maximum new circles per step
+          MaximalPoints                  maximum new points in the run
+          MaximalLines                   maximum new lines in the run
+          MaximalCircles                 maximum new circles in the run
 
         Symmetry modes
 

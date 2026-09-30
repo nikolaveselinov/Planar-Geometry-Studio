@@ -25,64 +25,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         new("All files") { Patterns = new[] { "*" } }
     };
 
-    private const string DefaultInputText =
-        """
-        Constructions:
-
-         Centroid
-         CircleWithCenterThroughPoint
-         CircleWithDiameter
-         CircleWithRadius
-         Circumcenter
-         Circumcircle
-         Excenter
-         Excircle
-         ExternalAngleBisector
-         Incenter
-         Incircle
-         InternalAngleBisector
-         IntersectionOfLineAndLineFromPoints
-         IntersectionOfLines
-         IntersectionOfLinesFromPoints
-         IsoscelesTrapezoidPoint
-         LineThroughCircumcenter
-         Median
-         Midline
-         Midpoint
-         MidpointOfArc
-         MidpointOfOppositeArc
-         NinePointCircle
-         OppositePointOnCircumcircle
-         Orthocenter
-         ParallelLine
-         ParallelLineToLineFromPoints
-         ParallelogramPoint
-         PerpendicularBisector
-         PerpendicularLine
-         PerpendicularLineAtPointOfLine
-         PerpendicularLineToLineFromPoints
-         PerpendicularProjection
-         PerpendicularProjectionOnLineFromPoints
-         PointReflection
-         ReflectionInLine
-         ReflectionInLineFromPoints
-         SecondIntersectionOfCircleAndLineFromPoints
-         SecondIntersectionOfTwoCircumcircles
-         TangentLine
-
-        Initial configuration:
-
-         Triangle: A, B, C
-         D = Circumcenter(A, B, C)
-         E = Incenter(A, B, C)
-         F = Orthocenter(A, B, C)
-
-        Iterations: 1
-        MaximalPoints: 4
-        MaximalLines: 4
-        MaximalCircles: 3
-        SymmetryGenerationMode: GenerateBothSymmetricAndAsymmetric
-        """;
+    private const string DefaultInputText = StarterConfiguration.Text;
 
     private readonly Window _window;
     private readonly WorkspaceManager _workspaceManager;
@@ -126,6 +69,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         AboutCommand = new RelayCommand(_ => ShowAbout());
         QuickStartCommand = new RelayCommand(_ => ShowQuickStart());
         ReferenceCommand = new RelayCommand(_ => ShowReference());
+        ConstructionsCommand = new AsyncRelayCommand(BrowseConstructionsAsync, () => !IsRunning);
         InitializeSetupCommands();
     }
 
@@ -196,7 +140,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
     public bool IsIdle => !IsRunning;
     public bool IsDirty => !string.Equals(InputText, _savedInputText, StringComparison.Ordinal);
     public string CurrentFileName => CurrentFilePath is null ? "Untitled" : Path.GetFileName(CurrentFilePath);
-    public string WindowTitle => $"{(IsDirty ? "● " : string.Empty)}{CurrentFileName} — {AppInfo.Name}";
+    public string WindowTitle => $"{(IsDirty ? "* " : string.Empty)}{CurrentFileName} — {AppInfo.Name}";
     public string InputStatistics => $"{CountLines(InputText)} lines  •  {InputText.Length:N0} characters";
     public string WorkspaceText => _latestWorkspace is null
         ? "No runs yet"
@@ -215,6 +159,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
     public ICommand AboutCommand { get; }
     public ICommand QuickStartCommand { get; }
     public ICommand ReferenceCommand { get; }
+    public ICommand ConstructionsCommand { get; }
 
     public async Task<bool> ConfirmCloseAsync()
     {
@@ -586,6 +531,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         StatusText = "Quick Start";
     }
 
+    private async Task BrowseConstructionsAsync()
+    {
+        var browser = new ConstructionBrowserWindow();
+        var name = await browser.ShowDialog<string?>(_window);
+        if (name is null)
+            return;
+        try
+        {
+            var updated = ConstructionCatalog.Enable(InputText, name);
+            StatusText = updated == InputText ? $"{name} is already enabled" : $"Enabled {name}";
+            InputText = updated;
+        }
+        catch (ArgumentException exception)
+        {
+            ReportError("Could not enable construction", exception);
+        }
+    }
+
     private void ShowReference()
     {
         SetConsoleContent(HelpContent.Reference);
@@ -629,6 +592,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void RaiseCommandStates()
     {
+        (ConstructionsCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (NewCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (OpenCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (GenerateCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();

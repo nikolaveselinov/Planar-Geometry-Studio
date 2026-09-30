@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GeoGen.DesktopApp.ViewModels"
+        xmlns:services="using:GeoGen.DesktopApp.Services"
+        x:Class="GeoGen.DesktopApp.Views.ConstructionBrowserWindow"
+        x:DataType="vm:ConstructionBrowserViewModel"
+        Title="Constructions" Width="980" Height="650" MinWidth="780" MinHeight="520"
+        Background="#252526" WindowStartupLocation="CenterOwner">
+    <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="16">
+        <StackPanel Spacing="6">
+            <TextBlock Text="Constructions" FontSize="22" FontWeight="SemiBold" Foreground="#D4D4D4" />
+            <TextBlock Text="Explore the tools available to your configuration." Foreground="#CCCCCC" />
+        </StackPanel>
+        <Grid Grid.Row="1" ColumnDefinitions="*,150" ColumnSpacing="12">
+            <TextBox x:Name="SearchBox" AutomationProperties.Name="Search constructions" Text="{Binding Query, Mode=TwoWay}" PlaceholderText="Search names or descriptions…" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding OutputTypes}" SelectedItem="{Binding OutputType, Mode=TwoWay}"
+                      HorizontalAlignment="Stretch" ToolTip.Tip="Filter by the object created" AutomationProperties.Name="Object type" />
+        </Grid>
+        <Grid Grid.Row="2" ColumnDefinitions="340,*" ColumnSpacing="20">
+            <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                     Background="#1E1E1E" BorderBrush="#3C3C3C" BorderThickness="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="services:ConstructionEntry">
+                        <StackPanel Margin="4,6" Spacing="4">
+                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding OutputType}" FontSize="11" Foreground="#A0A0A0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="{Binding SelectedName}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding SelectedOutput}" Foreground="#CCCCCC" />
+                    <TextBlock Text="{Binding SelectedDescription}" TextWrapping="Wrap" FontSize="14" LineHeight="23" />
+                    <Border Background="#1E1E1E" Padding="14" CornerRadius="2">
+                        <TextBox Text="{Binding SelectedInvocation, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas,monospace" TextWrapping="Wrap" Background="Transparent" BorderThickness="0" Padding="0" />
+                    </Border>
+                    <TextBlock Text="{Binding SelectedArguments}" Foreground="#CCCCCC" TextWrapping="Wrap" />
+                    <TextBlock Text="Use your own object names in this example. Argument order matters."
+                               Foreground="#A0A0A0" TextWrapping="Wrap" FontSize="12" />
+                    <Border Height="1" Background="#3C3C3C" />
+                    <TextBlock Text="Enable in input adds this tool to the Constructions section, allowing the generator to create new objects with it. Initial definitions can use any construction in this catalog."
+                               TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="12" LineHeight="20" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel VerticalAlignment="Center" Spacing="3">
+                <TextBlock Text="{Binding ResultCount}" Foreground="#A0A0A0" FontSize="12" />
+                <TextBlock Text="{Binding Feedback}" Foreground="#CCCCCC" FontSize="12" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Button Content="Copy call" Click="CopyCall" IsEnabled="{Binding HasSelection}" />
+                <Button Content="Enable in input" Click="EnableConstruction" IsEnabled="{Binding HasSelection}"
+                        />
+                <Button Content="Close" Click="CloseBrowser" IsCancel="True" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

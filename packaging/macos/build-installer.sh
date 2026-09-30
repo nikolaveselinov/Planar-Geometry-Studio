@@ -14,10 +14,10 @@ cp -R "$bundle" "$work/root/Applications/"
 python3 - "$root" "$work/resources" <<'PY'
 import html, pathlib, sys
 root, output = map(pathlib.Path, sys.argv[1:])
-style = '<style>body{font:14px -apple-system,Helvetica;color:#17213a;padding:24px}h1{font-size:28px;color:#6558d8}p{line-height:1.6}pre{white-space:pre-wrap;font:12px -apple-system,Helvetica}</style>'
+style = '<style>body{font:14px -apple-system,Helvetica;color:#222;padding:24px}h1{font-size:24px;color:#222}p{line-height:1.6}pre{white-space:pre-wrap;font:12px -apple-system,Helvetica}</style>'
 pages = {
-    'welcome.html': '<h1>From conjecture to figure.</h1><p>Welcome to Planar Geometry Studio.</p><p>Publisher: <b>Nikola Veselinov</b>.</p><p>This installer places Studio and its bundled geometry engine and .NET runtime in Applications. Launch Studio once installation finishes to set up optional drawing tools.</p><p>Your configurations and runs remain in Documents/Planar Geometry Studio, separately from the application.</p>',
-    'conclusion.html': '<h1>Your studio is ready.</h1><p>Open <b>Applications → Planar Geometry Studio</b>. Studio Setup checks your drawing tools and offers automatic installation of BasicTeX, MetaPost, and Ghostscript.</p><p>Updates are checked in the background on each launch. Manage this preference in Help → Studio Setup.</p><p>To uninstall, move Planar Geometry Studio.app to the Trash. Your runs and shared TeX installation are preserved.</p>',
+    'welcome.html': '<h1>Planar Geometry Studio</h1><p>Welcome to Planar Geometry Studio.</p><p>Publisher: <b>Nikola Veselinov</b>.</p><p>This installer places Studio and its bundled geometry engine and .NET runtime in Applications. Launch Studio once installation finishes to set up optional drawing tools.</p><p>Your configurations and runs remain in Documents/Planar Geometry Studio, separately from the application.</p>',
+    'conclusion.html': '<h1>Installation complete</h1><p>Open <b>Applications → Planar Geometry Studio</b>. Studio Setup checks your drawing tools and offers automatic installation of BasicTeX, MetaPost, and Ghostscript.</p><p>Updates are checked in the background on each launch. Manage this preference in Help → Studio Setup.</p><p>To uninstall, move Planar Geometry Studio.app to the Trash. Your runs and shared TeX installation are preserved.</p>',
     'terms.html': '<h1>Terms and setup notes</h1><pre>' + html.escape((root/'TERMS.md').read_text()) + '</pre>',
     'license.html': '<h1>GNU AGPL version 3</h1><pre>' + html.escape((root/'LICENSE').read_text()) + '</pre>'
 }

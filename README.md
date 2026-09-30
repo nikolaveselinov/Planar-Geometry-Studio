@@ -97,4 +97,10 @@ On Windows, use `./publish.ps1 -Runtime win-x64`.
 
 ## Download signatures
 
-macOS and Linux downloads include a matching `.asc` signature naming **Nikola Veselinov**, a runtime-specific `*-publisher.asc` public key, and `*-signatures.txt` verification instructions. Portable archives remain available and signed too. These self-declared signatures check download integrity; they do not establish a publicly trusted identity or remove Apple security warnings. See [verification details](packaging/README.md#macos-and-linux-download-signatures).
+The optional `*-verification.zip` archive collects macOS/Linux download signatures, public keys, fingerprints, and verification instructions in one place. Portable archives remain available and signed too. These self-declared signatures check download integrity; they do not establish a publicly trusted identity or remove Apple security warnings. See [verification details](packaging/README.md#macos-and-linux-download-signatures).
+
+## Construction browser
+
+Choose **Constructions** above the input editor, or press **Ctrl+K**, to search every supported construction. Filter by the object created, inspect the argument types and example call, and select **Enable in input** to add a tool to the generation list. **Copy call** gives an example to adapt in the initial configuration.
+
+New files start with a short triangle-and-medians example. Only two tools are enabled for generation; the complete catalog stays in the browser.

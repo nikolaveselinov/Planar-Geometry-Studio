@@ -2,25 +2,20 @@
 
 ## [1.2.3] - 2026-09-30
 
-- macOS and Linux installers and portable archives include detached RSA/SHA-256 signatures naming Nikola Veselinov, matching public keys, and verification instructions.
+- Use a restrained dark interface with standard controls and simpler setup screens.
 
-- Keep macOS package installation in Applications when an extracted portable copy exists elsewhere.
-- Display Nikola Veselinov in the macOS installer welcome page.
-- Verify installation with a registered portable copy present, alongside all download signatures and tamper-rejection checks.
+- Search the full construction catalog in the app, inspect argument types, copy calls, and enable individual generation tools.
+- Start with a focused triangle-and-medians configuration instead of a long list of constructions.
+- Find the right download from a platform table, with optional verification files collected in one archive.
+- Keep macOS installation in Applications when a portable copy exists elsewhere.
 
 ## [1.2.2] - 2026-09-30
 
-- macOS and Linux installers and portable archives now include detached RSA/SHA-256 signatures naming Nikola Veselinov.
-- Publish matching public keys, fingerprints, and verification instructions without uploading private keys or requiring administrator rights.
-- Packaging CI verifies every signature with a separate public-only keyring and requires rejection of modified downloads.
-- Signatures are self-declared; Apple notarization and publicly trusted publisher identities still require appropriate credentials.
+- Add download signatures and verification instructions for macOS and Linux installers and portable archives.
 
 ## [1.2.1] - 2026-09-30
 
-- Windows installers, uninstallers, and GeoGen executables carry a self-signed Authenticode signature named Nikola Veselinov.
-- Explicit Nikola Veselinov company metadata in the desktop executable.
-- Signatures identify the claimed author; Windows security warnings remain because the certificates are self-signed, not publicly trusted.
-- Verify signatures, installed uninstallers, publisher metadata, and rejection of modified executables in Windows packaging CI.
+- Add signatures and publisher information to Windows installers and portable executables.
 
 ## [1.2.0] - 2026-09-30
 

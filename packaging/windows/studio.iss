@@ -40,9 +40,7 @@ OutputDir={#OutputDir}
 OutputBaseFilename=PlanarGeometryStudio-v{#AppVersion}-{#Runtime}-setup
 SetupIconFile=..\assets\studio.ico
 WizardStyle=modern
-WizardSizePercent=110
-WizardImageFile=..\assets\wizard.bmp
-WizardSmallImageFile=..\assets\wizard-small.bmp
+WizardSizePercent=100
 LicenseFile=..\..\LICENSE
 InfoBeforeFile=..\..\TERMS.md
 Compression=lzma2
@@ -88,7 +86,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  WizardForm.WelcomeLabel1.Caption := 'From conjecture to figure.';
+  WizardForm.WelcomeLabel1.Caption := 'Welcome to Planar Geometry Studio';
   WizardForm.WelcomeLabel2.Caption :=
     'Welcome to Planar Geometry Studio.' + #13#10#13#10 +
     'Setup installs the studio, geometry engine, and .NET runtime. Choose the installation folder, shortcuts, and optional drawing tools on the following pages.' + #13#10#13#10 +

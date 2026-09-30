@@ -104,12 +104,20 @@ jobs:
           xvfb-run -a -s '-screen 0 1100x900x24' .github/scripts/capture-setup.sh \
             "$PWD/artifacts/staging/linux-x64/PlanarGeometryStudio/PlanarGeometryStudio" "$PWD/artifacts/studio-setup.png"
 
+      - name: Verify construction browser and capture workspace
+        if: matrix.rid == 'linux-x64'
+        run: |
+          xvfb-run -a -s '-screen 0 1400x1000x24' .github/scripts/capture-constructions.sh \
+            "$PWD/artifacts/staging/linux-x64/PlanarGeometryStudio/PlanarGeometryStudio" "$PWD/artifacts/interface-preview"
+
       - name: Upload setup preview
         if: matrix.rid == 'linux-x64'
         uses: actions/upload-artifact@v7
         with:
           name: studio-setup-preview
-          path: artifacts/studio-setup.png
+          path: |
+            artifacts/studio-setup.png
+            artifacts/interface-preview
 
       - name: Build macOS package and disk image
         if: startsWith(matrix.rid, 'osx-')
