@@ -142,8 +142,8 @@ its public key fingerprint. Install GnuPG, download those files and the asset
 from the official release, then verify (example):
 
 ```sh
-gpg --import PlanarGeometryStudio-v1.2.2-osx-arm64-publisher.asc
-gpg --verify PlanarGeometryStudio-v1.2.2-osx-arm64.pkg.asc PlanarGeometryStudio-v1.2.2-osx-arm64.pkg
+gpg --import PlanarGeometryStudio-v1.2.3-osx-arm64-publisher.asc
+gpg --verify PlanarGeometryStudio-v1.2.3-osx-arm64.pkg.asc PlanarGeometryStudio-v1.2.3-osx-arm64.pkg
 ```
 
 Verification needs no administrator rights. A good signature proves that bytes
