@@ -10,15 +10,19 @@ A desktop application for generating, proving, ranking, and drawing planar geome
 
 Download the [latest release](https://github.com/nikolaveselinov/Planar-Geometry-Studio/releases/latest).
 
-| Platform | x64 | Arm64 |
+| Platform | Portable: extract and run | Optional installer |
 |---|---|---|
-| Windows | `win-x64-setup.exe` | `win-arm64-setup.exe` |
-| Linux | `linux-x64.deb`, `.rpm`, or `.run` | `linux-arm64.deb`, `.rpm`, or `.run` |
-| macOS | `osx-x64.pkg` or `.dmg` | `osx-arm64.pkg` or `.dmg` |
+| Windows | `win-x64.zip` or `win-arm64.zip` | Matching `win-*-setup.exe` |
+| Linux | `linux-x64.tar.gz` or `linux-arm64.tar.gz` | Matching `.deb`, `.rpm`, or `.run` |
+| macOS | `osx-x64.zip` or `osx-arm64.zip` | Matching `.pkg` or `.dmg` |
 
-Asset names begin with `PlanarGeometryStudio-v<version>-`. Download the installer for your platform and processor. Windows setup offers Program Files or per-user installation, Start Menu and desktop shortcuts, optional drawing tools, and an uninstaller. macOS installs in Applications. On Linux, install `.deb` with apt, `.rpm` with dnf, or run `bash <filename>.run` for a per-user setup wizard.
+Asset names begin with `PlanarGeometryStudio-v<version>-`. Both portable archives and installers are published for every supported platform and processor. Portable downloads remain a supported way to use Studio, including on school computers without administrator rights.
 
-The packages include the application, GeoGen, and the .NET runtime. Portable `.zip` and `.tar.gz` archives remain available. Installer details and commands are in the [installation guide](packaging/README.md).
+**Portable use:** extract the complete archive into a folder you can write to. On Windows, run `PlanarGeometryStudio.exe` inside the extracted folder. On macOS, open the extracted `Planar Geometry Studio.app` directly. On Linux, run `./PlanarGeometryStudio` inside the extracted application folder. The application, GeoGen, and .NET runtime are included; the core app needs no installer, administrator access, or separate .NET installation.
+
+On first launch, choose **Start studio** to skip optional drawing-tool installation and use generation and proofs immediately. Figure rendering needs the optional TeX/PDF tools; existing tools can be reused, while installing missing tools may require permissions depending on the platform.
+
+**Installer use:** Windows setup offers Program Files or per-user installation, Start Menu and desktop shortcuts, optional drawing tools, and an uninstaller. macOS installs in Applications. On Linux, install `.deb` with apt, `.rpm` with dnf, or run `bash <filename>.run` for a per-user setup wizard. Installer details and commands are in the [installation guide](packaging/README.md).
 
 On first launch, **Studio Setup** detects existing drawing tools and offers automatic installation of MiKTeX on Windows, BasicTeX on macOS, or TeX Live on Linux, including MetaPost and PDF export. It is also available from **Help → Studio Setup**. Generation and proofs work without these optional downloads. See the [terms and setup notes](TERMS.md).
 
