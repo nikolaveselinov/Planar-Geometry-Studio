@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2] - 2026-09-30
+
+- macOS and Linux installers and portable archives now include detached RSA/SHA-256 signatures naming Nikola Veselinov.
+- Publish matching public keys, fingerprints, and verification instructions without uploading private keys or requiring administrator rights.
+- Packaging CI verifies every signature with a separate public-only keyring and requires rejection of modified downloads.
+- Signatures are self-declared; Apple notarization and publicly trusted publisher identities still require appropriate credentials.
+
 ## [1.2.1] - 2026-09-30
 
 - Windows installers, uninstallers, and GeoGen executables carry a self-signed Authenticode signature named Nikola Veselinov.
