@@ -12,6 +12,12 @@ function Refresh-ToolPath {
         $env:Path
     )
     $env:Path = ($paths | Where-Object { $_ }) -join ';'
+    $gsRoot = Join-Path $env:ProgramFiles 'gs'
+    if (Test-Path $gsRoot) {
+        Get-ChildItem $gsRoot -Directory | Sort-Object Name -Descending | ForEach-Object {
+            $env:Path += ';' + (Join-Path $_.FullName 'bin')
+        }
+    }
 }
 
 function Invoke-Checked([string]$Executable, [string[]]$Arguments) {

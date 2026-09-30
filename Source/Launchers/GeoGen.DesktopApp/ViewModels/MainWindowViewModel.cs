@@ -102,6 +102,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
     private string? _currentFilePath;
     private bool _isRunning;
     private bool _scrollOutputToTop;
+    private bool _disposed;
 
     public MainWindowViewModel(Window window)
     {
@@ -241,6 +242,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
+        if (_disposed)
+            return;
+        _disposed = true;
         _lifecycleCancellation.Cancel();
         _lifecycleCancellation.Dispose();
         _operationCancellation?.Cancel();

@@ -81,6 +81,24 @@ jobs:
           .github/scripts/verify-linux-package.sh 'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}.tar.gz'
           .github/scripts/verify-linux-installers.sh '${{ matrix.rid }}'
 
+      - name: Verify drawing-tool setup and real EPS/PDF rendering
+        if: matrix.rid == 'linux-x64' || matrix.rid == 'osx-arm64'
+        run: .github/scripts/verify-drawing-tools.sh '${{ matrix.rid }}'
+
+      - name: Capture first-launch setup for visual review
+        if: matrix.rid == 'linux-x64'
+        run: |
+          sudo apt-get install -y xvfb imagemagick xdotool
+          xvfb-run -a -s '-screen 0 1100x900x24' .github/scripts/capture-setup.sh \
+            "$PWD/artifacts/staging/linux-x64/PlanarGeometryStudio/PlanarGeometryStudio" "$PWD/artifacts/studio-setup.png"
+
+      - name: Upload setup preview
+        if: matrix.rid == 'linux-x64'
+        uses: actions/upload-artifact@v7
+        with:
+          name: studio-setup-preview
+          path: artifacts/studio-setup.png
+
       - name: Build macOS package and disk image
         if: startsWith(matrix.rid, 'osx-')
         run: ./packaging/macos/build-installer.sh '${{ matrix.rid }}' '${{ inputs.version }}'

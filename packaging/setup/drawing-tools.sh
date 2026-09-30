@@ -2,6 +2,18 @@
 set -euo pipefail
 export PATH="/Library/TeX/texbin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 
+mac_admin() {
+    if [[ "${PGS_SETUP_NONINTERACTIVE:-0}" == 1 ]] && sudo -n true 2>/dev/null; then
+        sudo /bin/sh -c "$1"
+    else
+        osascript - "$1" <<'APPLESCRIPT'
+on run argv
+    do shell script (item 1 of argv) with administrator privileges
+end run
+APPLESCRIPT
+    fi
+}
+
 if [[ "$(uname -s)" == Darwin ]]; then
     work_dir="$(mktemp -d)"
     trap 'rm -rf "$work_dir"' EXIT
@@ -19,22 +31,16 @@ if [[ "$(uname -s)" == Darwin ]]; then
             actual="$(shasum -a 256 "$work_dir/BasicTeX.pkg" | cut -d ' ' -f 1)"
             [[ "$actual" == "$expected" ]] || { echo 'BasicTeX checksum mismatch; nothing was installed.' >&2; exit 1; }
             # A native system permission prompt avoids asking for a password in Studio.
-            osascript - "$work_dir/BasicTeX.pkg" <<'APPLESCRIPT'
-on run argv
-    do shell script "/usr/sbin/installer -pkg " & quoted form of (item 1 of argv) & " -target /" with administrator privileges
-end run
-APPLESCRIPT
+            printf -v install_command '/usr/sbin/installer -pkg %q -target /' "$work_dir/BasicTeX.pkg"
+            mac_admin "$install_command"
         fi
+        echo 'Preparing MetaPost and plain TeX...'
+        # Add packages only when required: an existing working TeX distribution
+        # should not need a manager update merely to add Ghostscript.
+        tlmgr_path="$(command -v tlmgr)"
+        printf -v tex_command '%q update --self && %q install metapost cm plain epstopdf' "$tlmgr_path" "$tlmgr_path"
+        mac_admin "$tex_command"
     fi
-    echo 'Preparing MetaPost, plain TeX, and PDF export...'
-    # Add packages to the existing distribution rather than installing a second TeX.
-    tlmgr_path="$(command -v tlmgr)"
-    osascript - "$tlmgr_path" <<'APPLESCRIPT'
-on run argv
-    set manager to quoted form of (item 1 of argv)
-    do shell script manager & " update --self && " & manager & " install metapost cm plain epstopdf" with administrator privileges
-end run
-APPLESCRIPT
     # Reuse Homebrew when available; otherwise use MacTeX's small,
     # signed universal Ghostscript package rather than requiring Homebrew.
     if ! command -v gs >/dev/null; then
@@ -50,11 +56,8 @@ APPLESCRIPT
             actual_gs="$(shasum -a 512 "$work_dir/Ghostscript.pkg" | cut -d ' ' -f 1)"
             [[ "$actual_gs" == "$expected_gs" ]] || { echo 'Ghostscript checksum mismatch; nothing was installed.' >&2; exit 1; }
             pkgutil --check-signature "$work_dir/Ghostscript.pkg"
-            osascript - "$work_dir/Ghostscript.pkg" <<'APPLESCRIPT'
-on run argv
-    do shell script "/usr/sbin/installer -pkg " & quoted form of (item 1 of argv) & " -target /" with administrator privileges
-end run
-APPLESCRIPT
+            printf -v install_command '/usr/sbin/installer -pkg %q -target /' "$work_dir/Ghostscript.pkg"
+            mac_admin "$install_command"
         fi
     fi
 else
@@ -75,6 +78,8 @@ else
     fi
     if [[ "$EUID" == 0 ]]; then
         /bin/sh -c "$command_text"
+    elif [[ "${PGS_SETUP_NONINTERACTIVE:-0}" == 1 ]] && sudo -n true 2>/dev/null; then
+        sudo /bin/sh -c "$command_text"
     elif command -v pkexec >/dev/null; then
         pkexec /bin/sh -c "$command_text"
     elif sudo -n true 2>/dev/null; then

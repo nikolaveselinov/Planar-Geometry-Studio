@@ -12,6 +12,31 @@ $startMenu = Join-Path ([Environment]::GetFolderPath('ApplicationData')) "Micros
 if (-not (Test-Path (Join-Path $startMenu 'Planar Geometry Studio.lnk'))) { throw 'Start Menu shortcut is missing.' }
 if (-not (Test-Path (Join-Path $startMenu 'Studio Setup.lnk'))) { throw 'Setup shortcut is missing.' }
 
+# Exercise the packaged MiKTeX bootstrap on a real Windows runner. This script
+# refreshes the current process PATH just as Studio refreshes each child PATH.
+& (Join-Path $installDirectory 'setup\drawing-tools.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Automatic MiKTeX setup failed.' }
+$renderDirectory = Join-Path $env:RUNNER_TEMP 'Studio Drawing Test'
+New-Item -ItemType Directory -Force -Path $renderDirectory | Out-Null
+Copy-Item (Join-Path $installDirectory 'tools\drawer\Data\macros.mp') $renderDirectory
+@'
+input macros;
+beginfig(1);
+draw (0,0)--(100,0)--(50,80)--cycle;
+label(btex $A$ etex,(0,0));
+endfig;
+end.
+'@ | Set-Content (Join-Path $renderDirectory 'smoke.mp') -Encoding ascii
+Push-Location $renderDirectory
+try {
+    & mpost.exe -interaction=nonstopmode -halt-on-error -s prologues=3 smoke.mp
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path 'smoke.1')) { throw 'MetaPost rendering failed.' }
+    $converter = Get-Command epstopdf.exe -ErrorAction SilentlyContinue
+    if (-not $converter) { $converter = Get-Command miktex-epstopdf.exe -ErrorAction Stop }
+    & $converter.Source --outfile=smoke.pdf smoke.1
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path 'smoke.pdf')) { throw 'PDF conversion failed.' }
+} finally { Pop-Location }
+
 Push-Location (Join-Path $installDirectory 'tools\engine')
 try {
     $env:GEOGEN_NO_PAUSE = '1'
