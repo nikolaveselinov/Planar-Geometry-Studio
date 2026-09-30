@@ -118,6 +118,10 @@ jobs:
       - name: Verify macOS installation
         if: startsWith(matrix.rid, 'osx-')
         run: |
+          # Register the portable copy so this test also catches unwanted relocation.
+          /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister \
+            -f "$PWD/artifacts/staging/${{ matrix.rid }}/Planar Geometry Studio.app"
+          set -x
           sudo installer -pkg 'artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}.pkg' -target /
           test -x '/Applications/Planar Geometry Studio.app/Contents/MacOS/PlanarGeometryStudio'
           test -f '/Applications/Planar Geometry Studio.app/Contents/MacOS/setup/drawing-tools.sh'
