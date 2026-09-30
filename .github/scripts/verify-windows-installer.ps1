@@ -18,7 +18,7 @@ if (-not (Test-Path (Join-Path $startMenu 'Studio Setup.lnk'))) { throw 'Setup s
 if ($LASTEXITCODE -ne 0) { throw 'Automatic MiKTeX setup failed.' }
 $renderDirectory = Join-Path $env:RUNNER_TEMP 'Studio Drawing Test'
 New-Item -ItemType Directory -Force -Path $renderDirectory | Out-Null
-Copy-Item (Join-Path $installDirectory 'tools\drawer\Data\macros.mp') $renderDirectory
+Copy-Item (Join-Path $installDirectory 'tools\drawer\Data\*.mp') $renderDirectory
 @'
 input macros;
 beginfig(1);

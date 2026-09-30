@@ -66,7 +66,17 @@ try {
     if ($miktex) {
         Write-Output 'Preparing MetaPost, plain TeX, and PDF export...'
         Invoke-Checked $miktex.Source @('packages', 'update-package-database')
-        Invoke-Checked $miktex.Source @('packages', 'install', 'metapost', 'epstopdf')
+        foreach ($package in @('metapost', 'epstopdf')) {
+            # MiKTeX's install command reports an error for already-installed
+            # packages. Check metadata first so repeated setup is safe.
+            $installed = (& $miktex.Source packages info '--template={isInstalled}' $package | Select-Object -Last 1)
+            if ($LASTEXITCODE -ne 0) { throw "Could not inspect MiKTeX package $package." }
+            if ("$installed".Trim() -notmatch '^(true|yes|1)$') {
+                Invoke-Checked $miktex.Source @('packages', 'install', $package)
+            } else {
+                Write-Output "$package is already installed; reusing it."
+            }
+        }
         $initexmf = Get-Command initexmf.exe -ErrorAction Stop
         # User explicitly opted into dependency downloads, including missing TeX packages.
         Invoke-Checked $initexmf.Source @('--set-config-value=[MPM]AutoInstall=1')

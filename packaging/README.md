@@ -44,6 +44,7 @@ Use `osx-x64` for Intel. macOS's `pkgbuild`, `productbuild`, and `hdiutil` are
 required; Python 3 is used only while building installer resources.
 
 The `.pkg` installs in `/Applications`; the `.dmg` contains the same installer.
+macOS 14 (Sonoma) or later is required by the bundled .NET 10 runtime.
 The wizard includes welcome, setup/privacy notes, AGPL license, and completion
 pages. First launch opens Studio Setup. It downloads checksum-verified BasicTeX
 when needed and adds MetaPost, plain TeX, and epstopdf to the existing TeX Live

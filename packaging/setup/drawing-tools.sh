@@ -65,7 +65,7 @@ else
     # Only these fixed package-manager commands are elevated. Never execute a
     # downloaded script as root. pkexec supplies the desktop's permission dialog.
     if command -v apt-get >/dev/null; then
-        command_text='apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y texlive-metapost texlive-base texlive-latex-base texlive-fonts-recommended ghostscript'
+        command_text='apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends texlive-metapost texlive-base texlive-latex-base texlive-fonts-recommended ghostscript'
     elif command -v dnf >/dev/null; then
         command_text='dnf install -y texlive-metapost texlive-plain texlive-cm texlive-epstopdf ghostscript'
     elif command -v pacman >/dev/null; then

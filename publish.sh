@@ -111,7 +111,7 @@ if [[ "$RID" == osx-* ]]; then
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$VERSION</string>
-  <key>LSMinimumSystemVersion</key><string>12.0</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict>
 </plist>

@@ -37,7 +37,7 @@ cat > "$work/Distribution.xml" <<XML
   <conclusion file="conclusion.html"/>
   <options customize="never" require-scripts="false" hostArchitectures="${rid/osx-x64/x86_64}"/>
   <domains enable_localSystem="true" enable_currentUserHome="false" enable_anywhere="false"/>
-  <volume-check><allowed-os-versions><os-version min="12.0"/></allowed-os-versions></volume-check>
+  <volume-check><allowed-os-versions><os-version min="14.0"/></allowed-os-versions></volume-check>
   <choices-outline><line choice="studio"/></choices-outline>
   <choice id="studio" visible="false"><pkg-ref id="com.nikolaveselinov.planargeometrystudio"/></choice>
   <pkg-ref id="com.nikolaveselinov.planargeometrystudio" version="$version">Studio.pkg</pkg-ref>

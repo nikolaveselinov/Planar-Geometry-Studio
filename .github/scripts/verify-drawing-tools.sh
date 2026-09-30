@@ -7,7 +7,7 @@ PGS_SETUP_NONINTERACTIVE=1 bash "$app/setup/drawing-tools.sh"
 export PATH="/Library/TeX/texbin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-cp "$app/tools/drawer/Data/macros.mp" "$work/macros.mp"
+cp "$app/tools/drawer/Data/"*.mp "$work/"
 cat > "$work/smoke.mp" <<'METAPOST'
 input macros;
 beginfig(1);
