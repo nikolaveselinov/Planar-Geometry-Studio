@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.3] - 2026-09-30
+
+- macOS and Linux installers and portable archives include detached RSA/SHA-256 signatures naming Nikola Veselinov, matching public keys, and verification instructions.
+
+- Keep macOS package installation in Applications when an extracted portable copy exists elsewhere.
+- Display Nikola Veselinov in the macOS installer welcome page.
+- Verify installation with a registered portable copy present, alongside all download signatures and tamper-rejection checks.
+
 ## [1.2.2] - 2026-09-30
 
 - macOS and Linux installers and portable archives now include detached RSA/SHA-256 signatures naming Nikola Veselinov.
