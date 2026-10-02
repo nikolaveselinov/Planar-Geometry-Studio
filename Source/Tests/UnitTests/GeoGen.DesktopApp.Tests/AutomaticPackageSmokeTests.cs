@@ -34,7 +34,9 @@ public sealed class AutomaticPackageSmokeTests
                 await process!.WaitForExitAsync(timeout.Token);
                 Assert.That(process.ExitCode, Is.Zero);
             }
-            using var document = JsonDocument.Parse(await File.ReadAllTextAsync(receipt));
+            var acknowledgement = await File.ReadAllTextAsync(receipt);
+            TestContext.WriteLine(acknowledgement);
+            using var document = JsonDocument.Parse(acknowledgement);
             Assert.That(document.RootElement.GetProperty("Version").GetString(), Is.EqualTo(version));
             if (AutomaticUpdateService.CanUpdate)
             {

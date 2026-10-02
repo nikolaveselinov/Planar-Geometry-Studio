@@ -71,7 +71,7 @@ jobs:
           echo "refresh=$REFRESH_RELEASE" >> "$GITHUB_OUTPUT"
 
   verify:
-    name: Verify release commit
+    name: Verify source and updater tests
     needs: version
     runs-on: ubuntu-latest
     timeout-minutes: 30

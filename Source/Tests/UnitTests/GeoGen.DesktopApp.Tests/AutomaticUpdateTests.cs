@@ -69,6 +69,25 @@ public sealed class AutomaticUpdateTests
     }
 
     [Test]
+    public async Task AcknowledgesStartupThroughAParentDirectoryAlias()
+    {
+        if (OperatingSystem.IsWindows()) Assert.Ignore("Unix directory aliases reproduce macOS /var and /private/var.");
+        var bytes = Archive("linux-x64");
+        using var client = Client(bytes);
+        var root = Path.Combine(_directory, "Updates");
+        var service = new AutomaticUpdateService(root, client);
+        var prepared = await service.PrepareAsync(Release(bytes, "linux-x64"));
+        var alias = Path.Combine(_directory, "Alias");
+        Directory.CreateSymbolicLink(alias, root);
+        try
+        {
+            service.ConfirmStarted("1.2.5", "linux-x64", UpdateArchive.ApplicationDirectory(Path.Combine(alias, "versions", prepared.DirectoryName), "linux-x64"));
+            Assert.That(service.Pending, Is.Null);
+        }
+        finally { Directory.Delete(alias); }
+    }
+
+    [Test]
     public async Task FailedNewStartupFallsBackToThePreviouslyAcknowledgedVersion()
     {
         if (!AutomaticUpdateService.CanUpdate) Assert.Ignore("Elevated launchers deliberately bypass cached apps.");

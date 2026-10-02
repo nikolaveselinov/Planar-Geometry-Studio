@@ -156,8 +156,23 @@ public sealed class AutomaticUpdateService
         ReleaseVersion.IsNewer(update.Version, "0.0.0") && IsRuntime(update.RuntimeIdentifier) &&
         update.DirectoryName.Length == 32 && update.DirectoryName.All(char.IsAsciiHexDigit) && update.Files.Count is > 0 and <= 10_000;
     private static bool IsRuntime(string rid) => rid is "win-x64" or "win-arm64" or "osx-x64" or "osx-arm64" or "linux-x64" or "linux-arm64";
-    private static bool SamePath(string left, string right) => Path.GetFullPath(left).TrimEnd(Path.DirectorySeparatorChar)
-        .Equals(Path.GetFullPath(right).TrimEnd(Path.DirectorySeparatorChar), OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+    private static bool SamePath(string left, string right) => PhysicalDirectory(left)
+        .Equals(PhysicalDirectory(right), OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+    private static string PhysicalDirectory(string path)
+    {
+        var full = Path.GetFullPath(path);
+        var root = Path.GetPathRoot(full)!;
+        var current = root;
+        foreach (var component in full[root.Length..].Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+        {
+            if (component.Length == 0) continue;
+            current = Path.Combine(current, component);
+            var directory = new DirectoryInfo(current);
+            if (directory.Exists && directory.ResolveLinkTarget(returnFinalTarget: true) is { } target) current = target.FullName;
+        }
+        return current.TrimEnd(Path.DirectorySeparatorChar);
+    }
     private string VersionDirectory(PreparedUpdate update) => Path.Combine(_root, "versions", update.DirectoryName);
     private FileStream AcquireLock() => new(Path.Combine(_root, "update.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
     private PreparedUpdate? Read(string name)
