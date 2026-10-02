@@ -1,15 +1,44 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:GeoGen.DesktopApp.ViewModels"
-        xmlns:services="using:GeoGen.DesktopApp.Services"
         x:Class="GeoGen.DesktopApp.Views.ConstructionBrowserWindow"
         x:DataType="vm:ConstructionBrowserViewModel"
         Title="Constructions" Width="980" Height="650" MinWidth="780" MinHeight="520"
         Background="#252526" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <ControlTheme x:Key="ConstructionCheckBox" TargetType="CheckBox">
+            <Setter Property="MinWidth" Value="28" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Transparent" Padding="6">
+                        <Border x:Name="Box" Width="16" Height="16" CornerRadius="2"
+                                Background="#313131" BorderBrush="#6B6B6B" BorderThickness="1">
+                            <Path x:Name="Tick" Data="M 2,6 L 5,9 L 11,3" Stroke="#F0F0F0"
+                                  StrokeThickness="1.5" Width="12" Height="12" IsVisible="False"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:checked /template/ Path#Tick">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Border#Box">
+                <Setter Property="BorderBrush" Value="#B0B0B0" />
+            </Style>
+            <Style Selector="^:focus-visible /template/ Border#Box">
+                <Setter Property="BorderBrush" Value="#007ACC" />
+            </Style>
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="0.4" />
+            </Style>
+        </ControlTheme>
+    </Window.Resources>
     <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="16">
         <StackPanel Spacing="6">
             <TextBlock Text="Constructions" FontSize="22" FontWeight="SemiBold" Foreground="#D4D4D4" />
-            <TextBlock Text="Explore the tools available to your configuration." Foreground="#CCCCCC" />
+            <TextBlock Text="Check the tools you want to use for generation." Foreground="#CCCCCC" />
         </StackPanel>
         <Grid Grid.Row="1" ColumnDefinitions="*,150" ColumnSpacing="12">
             <TextBox x:Name="SearchBox" AutomationProperties.Name="Search constructions" Text="{Binding Query, Mode=TwoWay}" PlaceholderText="Search names or descriptions…" />
@@ -17,14 +46,21 @@
                       HorizontalAlignment="Stretch" ToolTip.Tip="Filter by the object created" AutomationProperties.Name="Object type" />
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="340,*" ColumnSpacing="20">
-            <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+            <ListBox x:Name="ConstructionList" ItemsSource="{Binding Results}" SelectedItem="{Binding Selected, Mode=TwoWay}"
                      Background="#1E1E1E" BorderBrush="#3C3C3C" BorderThickness="1">
                 <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="services:ConstructionEntry">
-                        <StackPanel Margin="4,6" Spacing="4">
-                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontWeight="SemiBold" />
-                            <TextBlock Text="{Binding OutputType}" FontSize="11" Foreground="#A0A0A0" />
-                        </StackPanel>
+                    <DataTemplate x:DataType="vm:ConstructionOptionViewModel">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,3">
+                            <CheckBox Theme="{StaticResource ConstructionCheckBox}"
+                                      IsChecked="{Binding IsIncluded, Mode=TwoWay}"
+                                      IsEnabled="{Binding CanEdit}" VerticalAlignment="Center"
+                                      AutomationProperties.Name="{Binding Name}"
+                                      ToolTip.Tip="Enable or disable for generation" />
+                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding OutputType}" FontSize="11" Foreground="#A0A0A0" />
+                            </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -40,20 +76,21 @@
                     <TextBlock Text="Use your own object names in this example. Argument order matters."
                                Foreground="#A0A0A0" TextWrapping="Wrap" FontSize="12" />
                     <Border Height="1" Background="#3C3C3C" />
-                    <TextBlock Text="Enable in input adds this tool to the Constructions section, allowing the generator to create new objects with it. Initial definitions can use any construction in this catalog."
+                    <TextBlock Text="Checkboxes update the Constructions section of your input immediately. Unchecking a tool removes it from generation; your initial definitions stay intact. Save your file to keep the changes."
                                TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="12" LineHeight="20" />
                 </StackPanel>
             </ScrollViewer>
         </Grid>
         <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <StackPanel VerticalAlignment="Center" Spacing="3">
-                <TextBlock Text="{Binding ResultCount}" Foreground="#A0A0A0" FontSize="12" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <TextBlock Text="{Binding ResultCount}" Foreground="#A0A0A0" FontSize="12" />
+                    <TextBlock Text="{Binding EnabledCount}" Foreground="#A0A0A0" FontSize="12" />
+                </StackPanel>
                 <TextBlock Text="{Binding Feedback}" Foreground="#CCCCCC" FontSize="12" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                 <Button Content="Copy call" Click="CopyCall" IsEnabled="{Binding HasSelection}" />
-                <Button Content="Enable in input" Click="EnableConstruction" IsEnabled="{Binding HasSelection}"
-                        />
                 <Button Content="Close" Click="CloseBrowser" IsCancel="True" />
             </StackPanel>
         </Grid>

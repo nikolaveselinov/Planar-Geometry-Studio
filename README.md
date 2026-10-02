@@ -101,6 +101,6 @@ The optional `*-verification.zip` archive collects macOS/Linux download signatur
 
 ## Construction browser
 
-Choose **Constructions** above the input editor, or press **Ctrl+K**, to search every supported construction. Filter by the object created, inspect the argument types and example call, and select **Enable in input** to add a tool to the generation list. **Copy call** gives an example to adapt in the initial configuration.
+Choose **Constructions** above the input editor, or press **Ctrl+K**, to search every supported construction. Filter by the object created, inspect the argument types and example call, and check or uncheck tools to update the generation list without closing the browser. Your current choices are shown automatically and stay selected while searching or filtering. Save your configuration to keep the changes. **Copy call** gives an example to adapt in the initial configuration.
 
 New files start with a short triangle-and-medians example. Only two tools are enabled for generation; the complete catalog stays in the browser.

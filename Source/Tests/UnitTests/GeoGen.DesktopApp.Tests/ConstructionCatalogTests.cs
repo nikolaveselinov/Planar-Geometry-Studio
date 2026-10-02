@@ -55,6 +55,94 @@ public sealed class ConstructionCatalogTests
         Assert.Throws<ArgumentException>(() => ConstructionCatalog.Enable(StarterConfiguration.Text, "NotReal"));
     }
 
+    [TestCase("\n")]
+    [TestCase("\r\n")]
+    public void UncheckingRemovesOnlyActiveEntriesAndPreservesCommentsAndInitialDefinitions(string newline)
+    {
+        var input = StarterConfiguration.Text.Replace("Constructions:",
+            "Constructions:\n # Median is available here\n Median\n\tMedian  ").Replace("\n", newline);
+        var originalTail = input[input.IndexOf("Initial configuration:", StringComparison.Ordinal)..];
+        var updated = ConstructionCatalog.SetEnabled(input, "Median", false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ConstructionCatalog.GetEnabled(input), Does.Contain("Median"));
+            Assert.That(ConstructionCatalog.GetEnabled(input), Does.Not.Contain("Circumcenter"));
+            Assert.That(ConstructionCatalog.GetEnabled(updated), Is.EquivalentTo(new[] { "Midpoint", "IntersectionOfLines" }));
+            Assert.That(updated, Does.Contain("# Median is available here"));
+            Assert.That(updated[updated.IndexOf("Initial configuration:", StringComparison.Ordinal)..], Is.EqualTo(originalTail));
+            Assert.That(ConstructionCatalog.SetEnabled(updated, "Median", false), Is.EqualTo(updated));
+            Assert.That(updated.Replace(newline, string.Empty), Does.Not.Contain("\r"));
+        });
+    }
+
+    [Test]
+    public void CheckboxChoicesUpdateTheInputAndSurviveFilteringAndReopening()
+    {
+        var browser = new ConstructionBrowserViewModel(StarterConfiguration.Text);
+        var midpoint = browser.Results.Single(option => option.Name == "Midpoint");
+        var circumcenter = browser.Results.Single(option => option.Name == "Circumcenter");
+        var median = browser.Results.Single(option => option.Name == "Median");
+        var updates = new List<string>();
+        browser.ConfigurationChanged += updates.Add;
+        Assert.That(midpoint.IsIncluded, Is.True);
+        Assert.That(median.IsIncluded, Is.False, "An initial definition is not a generation tool selection.");
+        circumcenter.IsIncluded = true;
+        median.IsIncluded = true;
+        midpoint.IsIncluded = false;
+        midpoint.IsIncluded = false;
+        browser.Query = "circumcenter";
+        browser.OutputType = "Circle";
+        Assert.That(browser.Results, Is.Empty);
+        browser.Query = string.Empty;
+        browser.OutputType = "All";
+        Assert.Multiple(() =>
+        {
+            Assert.That(browser.Results.Single(option => option.Name == "Circumcenter"), Is.SameAs(circumcenter));
+            Assert.That(circumcenter.IsIncluded, Is.True);
+            Assert.That(midpoint.IsIncluded, Is.False);
+            Assert.That(browser.EnabledCount, Is.EqualTo("3 enabled for generation"));
+            Assert.That(updates, Has.Count.EqualTo(3));
+            Assert.That(updates[^1], Is.EqualTo(browser.InputText));
+            Assert.That(browser.InputText, Does.Contain("ma = Median(A, B, C)"));
+        });
+        var reopened = new ConstructionBrowserViewModel(browser.InputText);
+        Assert.That(reopened.Results.Where(option => option.IsIncluded).Select(option => option.Name),
+            Is.EquivalentTo(new[] { "Circumcenter", "Median", "IntersectionOfLines" }));
+    }
+
+    [Test]
+    public void EveryCheckboxCanBeToggledInOneSessionWithoutChangingOtherConfigurationSections()
+    {
+        var browser = new ConstructionBrowserViewModel();
+        var originalTail = browser.InputText[browser.InputText.IndexOf("Initial configuration:", StringComparison.Ordinal)..];
+        foreach (var option in browser.Results) option.IsIncluded = true;
+        Assert.That(ConstructionCatalog.GetEnabled(browser.InputText), Has.Count.EqualTo(ConstructionCatalog.Entries.Count));
+        foreach (var option in browser.Results) option.IsIncluded = false;
+        Assert.Multiple(() =>
+        {
+            Assert.That(ConstructionCatalog.GetEnabled(browser.InputText), Is.Empty);
+            Assert.That(browser.EnabledCount, Is.EqualTo("0 enabled for generation"));
+            Assert.That(browser.InputText[browser.InputText.IndexOf("Initial configuration:", StringComparison.Ordinal)..], Is.EqualTo(originalTail));
+        });
+    }
+
+    [TestCase("Triangle: A, B, C")]
+    [TestCase("Initial configuration:\nTriangle: A, B, C\nConstructions:")]
+    public void InvalidInputKeepsTheCatalogReadableAndDisablesEditing(string input)
+    {
+        var browser = new ConstructionBrowserViewModel(input);
+        browser.Results[0].IsIncluded = true;
+        Assert.Multiple(() =>
+        {
+            Assert.That(browser.CanEdit, Is.False);
+            Assert.That(browser.Results[0].CanEdit, Is.False);
+            Assert.That(browser.Results[0].IsIncluded, Is.False);
+            Assert.That(browser.HasSelection, Is.True);
+            Assert.That(browser.InputText, Is.EqualTo(input));
+            Assert.That(browser.Feedback, Does.Contain("Constructions:"));
+        });
+    }
+
     [Test]
     public void StarterHasAValidConfigurationAndSmallGenerationList()
     {

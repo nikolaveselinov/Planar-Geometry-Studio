@@ -533,20 +533,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     private async Task BrowseConstructionsAsync()
     {
-        var browser = new ConstructionBrowserWindow();
-        var name = await browser.ShowDialog<string?>(_window);
-        if (name is null)
-            return;
-        try
+        var browser = new ConstructionBrowserWindow(InputText);
+        var model = (ConstructionBrowserViewModel)browser.DataContext!;
+        model.ConfigurationChanged += input =>
         {
-            var updated = ConstructionCatalog.Enable(InputText, name);
-            StatusText = updated == InputText ? $"{name} is already enabled" : $"Enabled {name}";
-            InputText = updated;
-        }
-        catch (ArgumentException exception)
-        {
-            ReportError("Could not enable construction", exception);
-        }
+            InputText = input;
+            StatusText = "Updated constructions";
+        };
+        await browser.ShowDialog(_window);
     }
 
     private void ShowReference()

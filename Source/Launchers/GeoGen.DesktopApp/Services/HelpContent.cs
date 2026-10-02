@@ -68,7 +68,8 @@ internal static class HelpContent
           Select Constructions above the input editor, or press Ctrl+K.
           Search by name or description and filter by the type of object created.
           Each entry shows its arguments, example call, and geometric meaning.
-          Enable in input adds its name to the generation list without duplicates.
+          Check or uncheck tools to update the generation list without closing the browser.
+          Current choices stay selected while searching or filtering. Save your file to keep changes.
           Copy call copies an example to adapt in your initial configuration.
 
           The Constructions section controls which tools generate new objects.

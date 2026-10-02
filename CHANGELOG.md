@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.4] - 2026-10-02
+
+- Enable or disable multiple generation tools with compact checkboxes while the construction browser stays open.
+- See your current construction choices immediately and keep them while searching or filtering.
+- Update the input as you select tools, preserving initial definitions and the rest of your configuration.
+
 ## [1.2.3] - 2026-09-30
 
 - Use a restrained dark interface with standard controls and simpler setup screens.

@@ -9,16 +9,13 @@ namespace GeoGen.DesktopApp.Views;
 
 public partial class ConstructionBrowserWindow : Window
 {
-    public ConstructionBrowserWindow()
+    public ConstructionBrowserWindow() : this(Services.StarterConfiguration.Text) { }
+
+    public ConstructionBrowserWindow(string input)
     {
         AvaloniaXamlLoader.Load(this);
-        DataContext = new ConstructionBrowserViewModel();
+        DataContext = new ConstructionBrowserViewModel(input);
         Opened += (_, _) => this.FindControl<TextBox>("SearchBox")?.Focus();
-    }
-
-    private void EnableConstruction(object? sender, RoutedEventArgs args)
-    {
-        if (DataContext is ConstructionBrowserViewModel { Selected: { } entry }) Close(entry.Name);
     }
 
     private async void CopyCall(object? sender, RoutedEventArgs args)
@@ -27,7 +24,7 @@ public partial class ConstructionBrowserWindow : Window
         try
         {
             if (Clipboard is null) throw new InvalidOperationException("Clipboard unavailable.");
-            await Clipboard.SetValueAsync(DataFormat.Text, entry.Invocation);
+            await Clipboard.SetValueAsync(DataFormat.Text, entry.Entry.Invocation);
             viewModel.Feedback = "Example copied.";
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or

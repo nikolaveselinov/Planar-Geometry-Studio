@@ -34,3 +34,21 @@ xdotool type --clearmodifiers 'circumcenter'
 sleep 1
 import -window "$browser" "$output/studio-constructions-search.png"
 test -s "$output/studio-constructions-search.png"
+
+# The filtered list has two rows. Toggle both without leaving the browser.
+xdotool mousemove --window "$browser" 50 168 click 1
+xdotool mousemove --window "$browser" 50 230 click 1
+sleep 0.5
+xdotool search --onlyvisible --name '^Constructions$' >/dev/null
+import -window "$browser" "$output/studio-constructions-selected.png"
+xdotool key Escape
+sleep 0.5
+# Checkboxes must have reached the editor and marked the configuration unsaved.
+[[ "$(xdotool getwindowname "$main")" == '* '* ]]
+import -window "$main" "$output/studio-workspace-selected.png"
+xdotool windowfocus --sync "$main"
+xdotool key ctrl+k
+browser="$(wait_window '^Constructions$')"
+xdotool type --clearmodifiers 'circumcenter'
+sleep 0.5
+import -window "$browser" "$output/studio-constructions-reopened.png"

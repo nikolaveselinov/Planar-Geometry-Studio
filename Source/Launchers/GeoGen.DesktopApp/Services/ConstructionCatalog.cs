@@ -19,20 +19,38 @@ public static class ConstructionCatalog
                 .Contains(word, StringComparison.OrdinalIgnoreCase))).ToArray();
     }
 
-    public static string Enable(string input, string name)
+    public static IReadOnlySet<string> GetEnabled(string input)
+    {
+        var (start, end) = FindSection(input);
+        var names = input[start..end].Split('\n').Select(line => line.Trim()).ToHashSet(StringComparer.Ordinal);
+        return Entries.Where(entry => names.Contains(entry.Name)).Select(entry => entry.Name)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    public static string Enable(string input, string name) => SetEnabled(input, name, true);
+
+    public static string SetEnabled(string input, string name, bool enabled)
     {
         if (!Entries.Any(entry => entry.Name == name))
             throw new ArgumentException("Choose a construction from the catalog.", nameof(name));
+        var (start, end) = FindSection(input);
+        var section = input[start..end];
+        var entry = new Regex($@"(?m)^[\t ]*{Regex.Escape(name)}[\t ]*\r?(?:\n|$)");
+        if (!enabled)
+            return input[..start] + entry.Replace(section, string.Empty) + input[end..];
+        if (entry.IsMatch(section))
+            return input;
+        var newline = input.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
+        return input.Insert(start, $"{newline} {name}");
+    }
+
+    private static (int Start, int End) FindSection(string input)
+    {
         var start = Regex.Match(input, @"(?m)^[\t ]*Constructions:[\t ]*(?=\r?$)");
         var end = Regex.Match(input, @"(?m)^[\t ]*Initial configuration:[\t ]*(?=\r?$)");
         if (!start.Success || !end.Success || end.Index <= start.Index)
             throw new ArgumentException("Add Constructions: before Initial configuration: in your input.", nameof(input));
-        var section = input[(start.Index + start.Length)..end.Index];
-        if (section.Split('\n').Any(line => line.Trim() == name))
-            return input;
-        var newline = input.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
-        var insertion = start.Index + start.Length;
-        return input.Insert(insertion, $"{newline} {name}");
+        return (start.Index + start.Length, end.Index);
     }
 
     private static ConstructionEntry[] Load()
