@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.6] - 2026-10-02
+
+- Fix a startup crash that prevented packaged installations and portable copies from generating figures.
+- Include the drawing tool’s error details when figure generation fails.
+
 ## [1.2.5] - 2026-10-02
 
 - Download verified updates automatically in the background and open them on the next launch.

@@ -6,4 +6,11 @@ public sealed record ProcessResult(int ExitCode, IReadOnlyList<string> OutputLin
 
     public bool Contains(string value) =>
         AllLines.Any(line => line.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+    public string FailureMessage(string toolName)
+    {
+        var detail = ErrorLines.FirstOrDefault(line => !string.IsNullOrWhiteSpace(line));
+        return $"{toolName} exited with code {ExitCode}." +
+            (detail is null ? " See the output above for details." : $" {detail.Trim()} See the output above for the full error.");
+    }
 }

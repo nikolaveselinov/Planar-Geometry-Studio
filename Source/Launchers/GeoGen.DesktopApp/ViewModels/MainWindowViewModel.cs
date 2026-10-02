@@ -439,7 +439,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
                 cancellationToken);
 
             if (result.ExitCode != 0)
-                throw new InvalidOperationException($"The drawing tool exited with code {result.ExitCode}.");
+                throw new InvalidOperationException(result.FailureMessage("The drawing tool"));
 
             var failedFigures = result.AllLines
                 .Select(line => FailedFigureRegex().Match(line))

@@ -1,16 +1,27 @@
 using GeoGen.DesktopApp.Services;
+using GeoGen.DesktopApp.Models;
 using NUnit.Framework;
 using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
 
 namespace GeoGen.DesktopApp.Tests;
 
 public sealed class ProcessRunnerTests
 {
     [Test]
+    public void FailedToolReportsItsExceptionAlongsideTheExitCode()
+    {
+        var result = new ProcessResult(-532462766, Array.Empty<string>(), new[] { "", "Unhandled exception. LoggingException: Cannot configure logging.", "   at Program.Main()" });
+        Assert.That(result.FailureMessage("The drawing tool"), Does.Contain("LoggingException: Cannot configure logging.").And.Contain("-532462766"));
+        var silent = new ProcessResult(7, Array.Empty<string>(), Array.Empty<string>());
+        Assert.That(silent.FailureMessage("The drawing tool"), Does.Contain("code 7").And.Contain("output above"));
+    }
+
+    [Test]
     public async Task CapturesOutputErrorAndExitCode()
     {
-        var streamed = new List<string>();
-        var runner = new ProcessRunner(streamed.Add);
+        var streamed = new ConcurrentQueue<string>();
+        var runner = new ProcessRunner(streamed.Enqueue);
         var (executable, arguments) = CreateShellCommand(
             windowsCommand: "echo output & echo error 1>&2 & exit /b 7",
             unixCommand: "printf 'output\\n'; printf 'error\\n' >&2; exit 7");

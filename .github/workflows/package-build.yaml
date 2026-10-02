@@ -165,6 +165,19 @@ jobs:
           dotnet test Source/Tests/UnitTests/GeoGen.DesktopApp.Tests/GeoGen.DesktopApp.Tests.csproj \
             --configuration Release --filter FullyQualifiedName~AutomaticPackageSmokeTests --verbosity normal
 
+      - name: Verify packaged drawing launcher and Studio PDF export
+        shell: bash
+        env:
+          STUDIO_PACKAGE_RID: ${{ matrix.rid }}
+          STUDIO_TEST_RENDER: ${{ (matrix.rid == 'win-x64' || matrix.rid == 'linux-x64' || matrix.rid == 'osx-arm64') && '1' || '0' }}
+        run: |
+          export STUDIO_PACKAGE_APP="$PWD/artifacts/staging/${{ matrix.rid }}/PlanarGeometryStudio"
+          if [[ '${{ matrix.rid }}' == osx-* ]]; then
+            export STUDIO_PACKAGE_APP="$PWD/artifacts/staging/${{ matrix.rid }}/Planar Geometry Studio.app/Contents/MacOS"
+          fi
+          dotnet test Source/Tests/UnitTests/GeoGen.DesktopApp.Tests/GeoGen.DesktopApp.Tests.csproj \
+            --configuration Release --filter FullyQualifiedName~PackagedDrawingTests --verbosity normal
+
       - name: Upload packages
         uses: actions/upload-artifact@v7
         with:
