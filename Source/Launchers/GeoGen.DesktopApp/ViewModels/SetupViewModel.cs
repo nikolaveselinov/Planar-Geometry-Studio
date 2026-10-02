@@ -15,6 +15,7 @@ public sealed class SetupViewModel : ViewModelBase, IDisposable
     private bool _isInstalling;
     private bool _drawingConsent;
     private bool _checkForUpdates;
+    private bool _downloadUpdates;
     private string _toolStatus = "Checking installed drawing tools…";
     private string _log = "";
     private string _message = "Generation and proofs are ready. Add drawing tools whenever you need figures.";
@@ -24,6 +25,7 @@ public sealed class SetupViewModel : ViewModelBase, IDisposable
         _window = window;
         _settings = settings;
         _checkForUpdates = settings.CheckForUpdatesOnLaunch;
+        _downloadUpdates = settings.DownloadUpdatesAutomatically;
         _drawingConsent = recommendDrawingTools;
         InstallCommand = new AsyncRelayCommand(InstallAsync, () => !IsInstalling && DrawingConsent);
         RefreshCommand = new AsyncRelayCommand(RefreshAsync, () => !IsInstalling);
@@ -49,6 +51,7 @@ public sealed class SetupViewModel : ViewModelBase, IDisposable
         }
     }
 
+    public bool DownloadUpdates { get => _downloadUpdates; set => SetProperty(ref _downloadUpdates, value); }
     public bool CheckForUpdates { get => _checkForUpdates; set => SetProperty(ref _checkForUpdates, value); }
     public bool DrawingConsent
     {
@@ -142,6 +145,7 @@ public sealed class SetupViewModel : ViewModelBase, IDisposable
     private void Finish()
     {
         _settings.CheckForUpdatesOnLaunch = CheckForUpdates;
+        _settings.DownloadUpdatesAutomatically = DownloadUpdates;
         _settings.SetupCompleted = true;
         try
         {

@@ -78,6 +78,7 @@ cp "$SCRIPT_DIR/LICENSE" "$APP_DIR/LICENSE.txt"
 cp "$SCRIPT_DIR/README.md" "$APP_DIR/README.md"
 cp "$SCRIPT_DIR/CHANGELOG.md" "$APP_DIR/CHANGELOG.md"
 cp "$SCRIPT_DIR/TERMS.md" "$APP_DIR/TERMS.md"
+printf '%s\n' "$VERSION" > "$APP_DIR/studio-version.txt"
 cp "$SCRIPT_DIR/packaging/assets/studio.svg" "$APP_DIR/studio.svg"
 
 if [[ "$RID" == osx-* ]]; then

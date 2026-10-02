@@ -15,7 +15,12 @@ public sealed partial class MainWindowViewModel
     private bool _showUpdateNotice;
     private bool _isCheckingUpdates;
     private bool _setupOpen;
+    private readonly AutomaticUpdateService _automaticUpdater = new();
+    private bool _isDownloadingUpdate;
+    private bool _updateReady;
 
+    public string UpdateActionText => _updateReady ? "Restart to update" :
+        _availableRelease?.Package is not null && AutomaticUpdateService.CanUpdate ? "Download update" : "Open release";
     public string UpdateNotice { get => _updateNotice; private set => SetProperty(ref _updateNotice, value); }
     public bool ShowUpdateNotice { get => _showUpdateNotice; private set => SetProperty(ref _showUpdateNotice, value); }
     public bool HasUpdate => _availableRelease is not null;
@@ -28,12 +33,13 @@ public sealed partial class MainWindowViewModel
     {
         StudioSetupCommand = new AsyncRelayCommand(() => ShowStudioSetupAsync(false), () => !IsRunning);
         CheckForUpdatesCommand = new AsyncRelayCommand(() => CheckForUpdatesAsync(manual: true));
-        DownloadUpdateCommand = new RelayCommand(_ => DownloadUpdate());
+        DownloadUpdateCommand = new AsyncRelayCommand(UpdateAsync, () => !_isDownloadingUpdate && !IsRunning);
         DismissUpdateCommand = new RelayCommand(_ => ShowUpdateNotice = false);
     }
 
     public async Task InitializeStudioAsync()
     {
+        _automaticUpdater.ConfirmStarted(AppInfo.Version, UpdateService.RuntimeIdentifier, AppContext.BaseDirectory);
         var arguments = Environment.GetCommandLineArgs();
         if (arguments.Contains("--no-update-checks", StringComparer.Ordinal))
             _studioSettings.CheckForUpdatesOnLaunch = false;
@@ -62,7 +68,7 @@ public sealed partial class MainWindowViewModel
 
     private async Task CheckForUpdatesAsync(bool manual)
     {
-        if (_isCheckingUpdates)
+        if (_isCheckingUpdates || _isDownloadingUpdate)
             return;
         _isCheckingUpdates = true;
         if (manual)
@@ -78,6 +84,14 @@ public sealed partial class MainWindowViewModel
             OnPropertyChanged(nameof(HasUpdate));
             UpdateNotice = result.Message;
             ShowUpdateNotice = manual || HasUpdate;
+            _updateReady = _automaticUpdater.Pending is { Attempted: false } pending && pending.Version == _availableRelease?.Version && _automaticUpdater.Verify(pending);
+            OnPropertyChanged(nameof(UpdateActionText));
+            if (_updateReady) UpdateNotice = $"Studio {_availableRelease!.Version} is ready. It will open on your next launch.";
+            else if (_availableRelease?.Package is not null && _studioSettings.DownloadUpdatesAutomatically &&
+                AutomaticUpdateService.CanUpdate && !_automaticUpdater.HasFailedUpdate(_availableRelease.Version))
+                await DownloadUpdateAsync();
+            else if (_availableRelease is not null && _automaticUpdater.HasFailedUpdate(_availableRelease.Version))
+                UpdateNotice = "The update did not start. Your previous version is still available; download again to retry.";
         }
         catch (OperationCanceledException)
         {
@@ -89,21 +103,66 @@ public sealed partial class MainWindowViewModel
         }
     }
 
-    private void DownloadUpdate()
+    private async Task UpdateAsync()
     {
-        if (_availableRelease is null)
-            return;
+        if (_availableRelease is null) return;
+        if (_updateReady)
+        {
+            if (!await ConfirmCloseAsync()) return;
+            if (_automaticUpdater.TryLaunchLatest(AppInfo.Version, UpdateService.RuntimeIdentifier, Array.Empty<string>()))
+                ((MainWindow)_window).CloseAfterConfirmation();
+            else
+            {
+                _updateReady = false;
+                OnPropertyChanged(nameof(UpdateActionText));
+                UpdateNotice = "Could not start the update. Your current version is still running; choose Download update to retry.";
+            }
+        }
+        else if (_availableRelease.Package is not null && AutomaticUpdateService.CanUpdate) await DownloadUpdateAsync();
+        else
+        {
+            try { Process.Start(new ProcessStartInfo { FileName = _availableRelease.ReleasePage.AbsoluteUri, UseShellExecute = true }); }
+            catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
+            { UpdateNotice = "Open this release in your browser: " + _availableRelease.ReleasePage; }
+        }
+    }
+
+    private async Task DownloadUpdateAsync()
+    {
+        if (_availableRelease is null || _isDownloadingUpdate) return;
+        _isDownloadingUpdate = true;
+        ShowUpdateNotice = true;
+        (DownloadUpdateCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        var version = _availableRelease.Version;
+        var lastPercent = -1;
+        var progress = new Progress<double>(fraction =>
+        {
+            var percent = (int)(fraction * 100);
+            if (percent == lastPercent || !_isDownloadingUpdate) return;
+            lastPercent = percent;
+            UpdateNotice = percent == 100 ? $"Verifying Studio {version}…" : $"Downloading Studio {version}… {percent}%";
+        });
+        UpdateNotice = $"Downloading Studio {version}…";
         try
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = (_availableRelease.InstallerUrl ?? _availableRelease.ReleasePage).AbsoluteUri,
-                UseShellExecute = true
-            });
+            await _automaticUpdater.PrepareAsync(_availableRelease, progress, _lifecycleCancellation.Token);
+            _updateReady = true;
+            UpdateNotice = $"Studio {version} is ready. Restart when convenient, or open it on your next launch.";
         }
-        catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
+        catch (OperationCanceledException)
         {
-            UpdateNotice = "Open this release in your browser: " + _availableRelease.ReleasePage;
+            if (!_lifecycleCancellation.IsCancellationRequested) UpdateNotice = "Update download timed out. Choose Download update to retry.";
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or
+            System.Net.Http.HttpRequestException or InvalidOperationException or System.Security.Cryptography.CryptographicException)
+        {
+            UpdateNotice = "Could not prepare the update. Your current version is unchanged; choose Download update to retry.";
+        }
+        finally
+        {
+            _isDownloadingUpdate = false;
+            OnPropertyChanged(nameof(UpdateActionText));
+            (DownloadUpdateCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         }
     }
 }

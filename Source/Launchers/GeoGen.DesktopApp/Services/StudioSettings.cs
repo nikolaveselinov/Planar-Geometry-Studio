@@ -5,10 +5,11 @@ namespace GeoGen.DesktopApp.Services;
 public sealed class StudioSettings
 {
     public bool SetupCompleted { get; set; }
+    public bool DownloadUpdatesAutomatically { get; set; } = true;
     public bool CheckForUpdatesOnLaunch { get; set; } = true;
 
     public static string SettingsPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify),
         "PlanarGeometryStudio", "settings.json");
 
     public static StudioSettings Load(string? path = null)

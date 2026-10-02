@@ -153,6 +153,18 @@ jobs:
           fi
           ./packaging/sign-downloads.sh '${{ matrix.rid }}' '${{ inputs.version }}'
 
+      - name: Verify automatic update preparation and native startup
+        shell: bash
+        env:
+          STUDIO_UPDATE_RID: ${{ matrix.rid }}
+          STUDIO_UPDATE_VERSION: ${{ inputs.version }}
+        run: |
+          suffix='.zip'
+          [[ '${{ matrix.rid }}' == linux-* ]] && suffix='.tar.gz'
+          export STUDIO_UPDATE_ARCHIVE="$PWD/artifacts/PlanarGeometryStudio-v${{ inputs.version }}-${{ matrix.rid }}$suffix"
+          dotnet test Source/Tests/UnitTests/GeoGen.DesktopApp.Tests/GeoGen.DesktopApp.Tests.csproj \
+            --configuration Release --filter FullyQualifiedName~AutomaticPackageSmokeTests --verbosity normal
+
       - name: Upload packages
         uses: actions/upload-artifact@v7
         with:

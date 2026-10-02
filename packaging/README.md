@@ -83,13 +83,14 @@ Generation and proof search work without TeX.
 ## Update checks
 
 The app requests the GitHub latest stable release endpoint once on each launch,
-in the background, with an eight-second timeout and a one-megabyte response
+in the background, with an twenty-second timeout and a one-megabyte response
 limit. No application files, input, output, or local paths are sent. Drafts and
 prereleases are ignored. Semantic versions are compared numerically.
-The notice links to the exact platform/architecture installer, with a verified
-repository download URL. If a release has no matching installer it links to its
-release page. Downloads are handled by the browser, and the user runs the native
-installer. There is no background replacement of the running application.
+The app selects the exact platform/architecture portable asset, with the official
+repository download URL, published size, and SHA-256 digest. Updates download in
+the background and become available on restart or next launch. The running
+application is not overwritten. Older or incomplete releases, and elevated
+Windows sessions, can be opened from the release page instead.
 
 Disable checks in **Help → Studio Setup → Workspace**, or run a manual check
 from **Help → Check for Updates**. Preferences are written atomically to the
@@ -176,3 +177,19 @@ master commit containing `[refresh release]` that changes the release workflow.
 All builds and tests finish before assets are replaced; a refresh updates the tag
 to the rebuilt source commit and removes superseded loose verification files.
 Users already running the same version can download the refreshed build manually.
+
+## In-app updates
+
+Starting with 1.2.5, the installed executable also launches newer verified copies
+from the current user's `PlanarGeometryStudio/Updates` data directory. The existing
+portable assets are reused as update payloads; no extra public assets are required.
+GitHub's release asset SHA-256 digest and exact size are required before extraction.
+Update extraction rejects path traversal, links, special files, duplicate paths,
+and excessive archive sizes. Per-file hashes are checked before launching a copy.
+Prepared updates become active after the new application opens its main window.
+A failed first startup falls back instead of trying the same failed copy repeatedly.
+The existing installer installation and uninstall entries stay intact; displayed
+installer metadata refers to the installed launcher version. User update copies
+are kept with user data, alongside preferences, after uninstalling.
+Elevated Windows launches use the installed copy and offer the release page.
+Launch `--skip-cached-update` to bypass cached copies for recovery.

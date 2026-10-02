@@ -5,7 +5,8 @@ using System.Text.Json;
 
 namespace GeoGen.DesktopApp.Services;
 
-public sealed record AvailableRelease(string Version, Uri ReleasePage, Uri? InstallerUrl);
+public sealed record UpdatePackage(string RuntimeIdentifier, Uri Url, long Size, string Sha256);
+public sealed record AvailableRelease(string Version, Uri ReleasePage, Uri? InstallerUrl, UpdatePackage? Package = null);
 public sealed record UpdateCheckResult(string Message, AvailableRelease? Release = null);
 
 public sealed class UpdateService
@@ -20,7 +21,7 @@ public sealed class UpdateService
         string currentVersion, string runtimeIdentifier, CancellationToken cancellationToken = default)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(8));
+        timeout.CancelAfter(TimeSpan.FromSeconds(20));
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Get,
@@ -83,8 +84,11 @@ public sealed class UpdateService
         var tagSegment = Uri.EscapeDataString(version);
         var page = new Uri($"{AppInfo.RepositoryUrl}/releases/tag/{tagSegment}");
         Uri? installer = null;
+        UpdatePackage? package = null;
         var suffix = rid.StartsWith("win-", StringComparison.Ordinal) ? "-setup.exe"
             : rid.StartsWith("osx-", StringComparison.Ordinal) ? ".pkg" : ".run";
+        var archiveName = $"PlanarGeometryStudio-v{version.TrimStart('v')}-{rid}" +
+            (rid.StartsWith("linux-", StringComparison.Ordinal) ? ".tar.gz" : ".zip");
         var expectedName = $"PlanarGeometryStudio-v{version.TrimStart('v')}-{rid}{suffix}";
         if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
         {
@@ -92,16 +96,23 @@ public sealed class UpdateService
             {
                 if (asset.ValueKind != JsonValueKind.Object ||
                     !asset.TryGetProperty("name", out var name) || name.ValueKind != JsonValueKind.String ||
-                    name.GetString() != expectedName ||
                     !asset.TryGetProperty("browser_download_url", out var url) || url.ValueKind != JsonValueKind.String)
                     continue;
 
                 var expectedUrl = $"{AppInfo.RepositoryUrl}/releases/download/{tagSegment}/{expectedName}";
-                if (url.GetString() == expectedUrl)
+                if (name.GetString() == expectedName && url.GetString() == expectedUrl)
                     installer = new Uri(expectedUrl);
+                var archiveUrl = $"{AppInfo.RepositoryUrl}/releases/download/{tagSegment}/{archiveName}";
+                if (name.GetString() == archiveName && url.GetString() == archiveUrl &&
+                    asset.TryGetProperty("state", out var state) && state.ValueKind == JsonValueKind.String && state.GetString() == "uploaded" &&
+                    asset.TryGetProperty("size", out var size) && size.ValueKind == JsonValueKind.Number && size.TryGetInt64(out var bytes) && bytes is > 0 and <= 536_870_912 &&
+                    asset.TryGetProperty("digest", out var digest) && digest.ValueKind == JsonValueKind.String &&
+                    digest.GetString() is { } hash && hash.StartsWith("sha256:", StringComparison.Ordinal) &&
+                    hash.Length == 71 && hash[7..].All(char.IsAsciiHexDigit))
+                    package = new UpdatePackage(rid, new Uri(archiveUrl), bytes, hash[7..]);
             }
         }
 
-        return new($"Studio {version.TrimStart('v')} is available.", new(version.TrimStart('v'), page, installer));
+        return new($"Studio {version.TrimStart('v')} is available.", new(version.TrimStart('v'), page, installer, package));
     }
 }

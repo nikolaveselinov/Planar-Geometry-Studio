@@ -1,6 +1,6 @@
 # Planar Geometry Studio — terms and setup notes
 
-Effective 30 September 2026.
+Effective 2 October 2026.
 
 ## Your license
 
@@ -28,8 +28,17 @@ By default, it checks the public GitHub Releases API once on each launch for
 a newer stable version. GitHub receives the usual request information, including
 your IP address and the Studio version in its User-Agent. Your configurations,
 results, and local file paths are not included. You can disable automatic checks
-in Studio Setup, or check manually from Help. No update is installed without
-your action. Offline or unsuccessful checks do not prevent you from working.
+in Studio Setup, or check manually from Help. By default, newer stable versions
+also download from the official GitHub release in the background. Studio verifies
+the published SHA-256 checksum and prepares a separate copy in your user folder.
+The new copy opens on your next launch, or when you choose Restart to update;
+Studio does not interrupt a running session. Unsaved work gets the normal save
+prompt before restarting. You can disable automatic downloads in Studio Setup.
+Download requests go to GitHub and its download servers; no work files are sent.
+Updates include the app, engine, drawing launcher, and runtime; optional TeX tools
+are reused. Downloads can be substantial. Offline or unsuccessful checks and
+downloads do not prevent you from working. The installed copy remains available
+as a recovery launcher, and operating-system trust warnings may still appear.
 
 ## Optional drawing tools
 

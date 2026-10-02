@@ -26,7 +26,7 @@ On first launch, choose **Start studio** to skip optional drawing-tool installat
 
 On first launch, **Studio Setup** detects existing drawing tools and offers automatic installation of MiKTeX on Windows, BasicTeX on macOS, or TeX Live on Linux, including MetaPost and PDF export. It is also available from **Help → Studio Setup**. Generation and proofs work without these optional downloads. See the [terms and setup notes](TERMS.md).
 
-Studio checks for new stable releases in the background on every launch. A notice links to the installer for your platform. Manage automatic checks in Studio Setup, or select **Help → Check for Updates**. Your configurations and results stay local.
+Studio checks for new stable releases and downloads verified updates in the background on every launch. Choose **Restart to update**, or let the new version open on your next launch. Manage checks and downloads in Studio Setup, or select **Help → Check for Updates**. Your configurations and results stay local.
 
 Windows installers are self-signed as **Nikola Veselinov**. You can see this name in **Properties → Digital Signatures**. Windows may still display “Unknown publisher” or security warnings because the certificate is not publicly trusted. macOS apps are ad-hoc signed, with unsigned packages.
 
@@ -104,3 +104,20 @@ The optional `*-verification.zip` archive collects macOS/Linux download signatur
 Choose **Constructions** above the input editor, or press **Ctrl+K**, to search every supported construction. Filter by the object created, inspect the argument types and example call, and check or uncheck tools to update the generation list without closing the browser. Your current choices are shown automatically and stay selected while searching or filtering. Save your configuration to keep the changes. **Copy call** gives an example to adapt in the initial configuration.
 
 New files start with a short triangle-and-medians example. Only two tools are enabled for generation; the complete catalog stays in the browser.
+
+## Automatic updates
+
+From v1.2.5, Studio checks for new stable versions at launch and downloads verified
+app packages in the background. Choose **Restart to update**, or keep working:
+the prepared version opens on your next launch. The normal save prompt protects
+unsaved input. Configure checks and automatic downloads in **Help → Studio Setup**.
+
+Updates use a separate copy under your user data folder, so existing shortcuts
+keep working and no administrator rights are needed, even for an installation
+in Program Files or Applications. The installer and portable archives remain
+available. Optional drawing tools, configurations, preferences, and runs are reused.
+The full app package is downloaded; updates are not incremental patches.
+
+Versions older than v1.2.5 need one manual upgrade to gain the updater. If a prepared
+version fails to start, Studio falls back to the installed copy. To deliberately
+open that copy for recovery, launch it with `--skip-cached-update`.

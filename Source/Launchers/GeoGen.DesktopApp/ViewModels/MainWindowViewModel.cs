@@ -586,6 +586,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void RaiseCommandStates()
     {
+        (DownloadUpdateCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (ConstructionsCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (NewCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
         (OpenCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();

@@ -64,7 +64,7 @@
                 IsVisible="{Binding ShowUpdateNotice}">
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
                 <TextBlock Text="{Binding UpdateNotice}" VerticalAlignment="Center" TextWrapping="Wrap" />
-                <Button Grid.Column="1" Content="Download installer" Command="{Binding DownloadUpdateCommand}" IsVisible="{Binding HasUpdate}" />
+                <Button Grid.Column="1" Content="{Binding UpdateActionText}" Command="{Binding DownloadUpdateCommand}" IsVisible="{Binding HasUpdate}" />
                 <Button Grid.Column="2" Content="Dismiss" Command="{Binding DismissUpdateCommand}" />
             </Grid>
         </Border>

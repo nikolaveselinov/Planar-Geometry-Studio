@@ -30,7 +30,8 @@
                         </Border>
                         <TextBlock Text="Automatic updates" FontSize="16" FontWeight="SemiBold" />
                         <CheckBox Content="Check for a new stable version every time Studio opens" IsChecked="{Binding CheckForUpdates}" />
-                        <TextBlock Text="Checks run in the background. A small notice links to the installer for your platform. Nothing is installed until you choose it; offline launches keep working." TextWrapping="Wrap" Foreground="#A0A0A0" />
+                        <CheckBox Content="Download verified updates automatically" IsChecked="{Binding DownloadUpdates}" />
+                        <TextBlock Text="Updates download in the background and take effect the next time Studio opens. Choose Restart to update when convenient. Your work stays in place, and no administrator rights are needed. Downloads can be large; turn them off on a metered connection." TextWrapping="Wrap" Foreground="#A0A0A0" />
                         <TextBlock Text="Next: open Drawing tools to enable figure rendering, or start working now." TextWrapping="Wrap" Foreground="#A0A0A0" />
                     </StackPanel>
                 </ScrollViewer>

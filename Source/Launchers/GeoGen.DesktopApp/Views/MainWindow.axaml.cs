@@ -40,6 +40,12 @@ public partial class MainWindow : Window
         Closed += (_, _) => viewModel.Shutdown();
     }
 
+    public void CloseAfterConfirmation()
+    {
+        _allowClose = true;
+        Close();
+    }
+
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
     private async void OnClosing(object? sender, WindowClosingEventArgs eventArgs)

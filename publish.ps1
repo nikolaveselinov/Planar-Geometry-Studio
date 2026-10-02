@@ -94,6 +94,7 @@ Copy-Item (Join-Path $ScriptDir "LICENSE") (Join-Path $AppDir "LICENSE.txt")
 Copy-Item (Join-Path $ScriptDir "README.md") (Join-Path $AppDir "README.md")
 Copy-Item (Join-Path $ScriptDir "CHANGELOG.md") (Join-Path $AppDir "CHANGELOG.md")
 Copy-Item (Join-Path $ScriptDir "TERMS.md") (Join-Path $AppDir "TERMS.md")
+Set-Content -Path (Join-Path $AppDir "studio-version.txt") -Value $Version -Encoding utf8
 Copy-Item (Join-Path $ScriptDir "packaging\assets\studio.svg") (Join-Path $AppDir "studio.svg")
 
 if ($Runtime.StartsWith("osx-")) {

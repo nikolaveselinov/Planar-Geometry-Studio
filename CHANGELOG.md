@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.5] - 2026-10-02
+
+- Download verified updates automatically in the background and open them on the next launch.
+- Restart from inside Studio, with the normal save prompt for unsaved input.
+- Update installed and portable copies without administrator rights, reusing existing drawing tools and user settings.
+- Keep the installed copy available for recovery if a prepared update cannot start.
+- Control automatic downloads separately from update checks in Studio Setup.
+
 ## [1.2.4] - 2026-10-02
 
 - Enable or disable multiple generation tools with compact checkboxes while the construction browser stays open.
