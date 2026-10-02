@@ -7,7 +7,7 @@ input matrix_helpers
 % 
 % The name of the font that used for drawing labels.
 %
-string Font; Font="lmmi12";
+string Font; Font="cmmi12";
 
 %
 % The scale factor that is applied to the glyphs loaded via the 'glyph' operator.

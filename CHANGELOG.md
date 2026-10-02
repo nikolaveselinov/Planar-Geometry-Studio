@@ -3,6 +3,7 @@
 ## [1.2.6] - 2026-10-02
 
 - Fix a startup crash that prevented packaged installations and portable copies from generating figures.
+- Render figure captions and labels with standard TeX fonts, avoiding missing optional packages.
 - Include the drawing tool’s error details when figure generation fails.
 
 ## [1.2.5] - 2026-10-02

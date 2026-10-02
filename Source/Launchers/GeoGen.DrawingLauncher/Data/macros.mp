@@ -100,14 +100,9 @@ enddef;
 %
 vardef TexTextOnTheRight(expr text) = 
 
-	% Setup some initial TeX settings. First load opmac
-	TEXPRE("\input opmac" & char(10) 
-	
-		% So we can easily use a better font
-		& "\fontfam [LModern]" & char(10) 
-				
-		% Higher paragraph skip
-		& "\parskip=10pt" & char(10) 
+	% Use the standard plain TeX fonts and primitives. This also works with
+	% compact TeX installations without OPmac or extra font packages.
+	TEXPRE("\parskip=10pt" & char(10)
 		
 		% No indent
 		& "\parindent=0pt" & char(10)
@@ -242,4 +237,4 @@ enddef;
 %
 def PointMarkTheoremStyle(expr P) = 
 	PointMarkScaled(P, 2.4) withcolor red
-enddef; 
+enddef;
