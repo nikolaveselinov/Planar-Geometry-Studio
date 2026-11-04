@@ -1,70 +1,42 @@
-# Planar Geometry Studio — terms and setup notes
+# Planar Geometry Studio — License, use, and setup notes
 
-Effective 2 October 2026.
+Last updated: 4 November 2026
 
-## Your license
+Planar Geometry Studio is a free desktop application based on GeoGen by Patrik Bak, maintained by Nikola Veselinov, and available on Windows, macOS, and Linux. No payment, registration, or user account is required.
 
-Planar Geometry Studio is free software under the GNU Affero General Public
-License, version 3. The complete license is supplied in LICENSE.txt and at
-https://github.com/nikolaveselinov/Planar-Geometry-Studio/blob/master/LICENSE.
-These notes explain installation and operation; they do not add restrictions
-to, replace, or reduce the rights granted by that license.
+## Free software license
 
-The GeoGen engine was created by Patrik Bak. Studio is maintained by Nikola
-Veselinov. Source code, including the source for each released version, is at
-https://github.com/nikolaveselinov/Planar-Geometry-Studio.
+Studio is licensed under the **GNU Affero General Public License, version 3 (AGPL-3.0-only)**. The complete license accompanies each application package as `LICENSE.txt` and appears in the source repository as `LICENSE`. The corresponding versioned source, build scripts, and original engine credits are available at https://github.com/nikolaveselinov/Planar-Geometry-Studio; the original GeoGen project is https://github.com/PatrikBak/GeoGen.
+
+You may use, modify, share, and redistribute Studio under the terms of the AGPL. **These notes do not impose any restrictions in addition to that license**, or limit your rights to inspect the source, reverse-engineer, modify, or redistribute it. Applicable third-party software retains its own license terms.
 
 ## Your work
 
-Configurations, generated theorems, proofs, and figures stay on your computer.
-These terms make no claim to ownership of your work. Runs are saved separately
-from the installed application, in Documents/Planar Geometry Studio/Runs.
-Updating or uninstalling Studio does not delete them.
+The application does not claim ownership of input configurations, generated theorems, proofs, figures, or other mathematical work created with Studio. Your results are saved locally, ordinarily in `Documents/Planar Geometry Studio/Runs/`. They are preserved separately from the application when it updates or is uninstalled; back up important work yourself.
 
-## Network access and privacy
+## Privacy and automatic updates
 
-Studio has no analytics, advertising, account requirement, or telemetry.
-By default, it checks the public GitHub Releases API once on each launch for
-a newer stable version. GitHub receives the usual request information, including
-your IP address and the Studio version in its User-Agent. Your configurations,
-results, and local file paths are not included. You can disable automatic checks
-in Studio Setup, or check manually from Help. By default, newer stable versions
-also download from the official GitHub release in the background. Studio verifies
-the published SHA-256 checksum and prepares a separate copy in your user folder.
-The new copy opens on your next launch, or when you choose Restart to update;
-Studio does not interrupt a running session. Unsaved work gets the normal save
-prompt before restarting. You can disable automatic downloads in Studio Setup.
-Download requests go to GitHub and its download servers; no work files are sent.
-Updates include the app, engine, drawing launcher, and runtime; optional TeX tools
-are reused. Downloads can be substantial. Offline or unsuccessful checks and
-downloads do not prevent you from working. The installed copy remains available
-as a recovery launcher, and operating-system trust warnings may still appear.
+See the detailed [privacy notice](PRIVACY.md).
 
-## Optional drawing tools
+Studio has no accounts, advertising, in-app analytics, or telemetry. By default it checks the GitHub Releases API for a newer stable version when it opens and may download a verified application archive in the background. GitHub receives ordinary connection information including your IP address, request time, and a User-Agent identifying the Studio version. Your geometry input, results, logs, and local file paths are not sent. The download is checked against GitHub's published size and SHA-256 digest, and prepared locally for a later launch or an optional restart.
 
-The application and its .NET runtime are included. Creating figures also needs
-MetaPost and TeX; PDF conversion needs epstopdf or Ghostscript. Setup detects
-existing tools before offering installation. Generation and proof search work
-without these optional tools.
+Disable automatic checks or automatic downloads independently in **Help → Studio Setup**. Manual checks remain available. Offline use and failed update checks do not prevent geometry generation or proofs. Downloaded updates may be large. The old installed application remains available as a recovery copy.
 
-If you choose to install drawing tools, setup contacts their distributors and
-package repositories. Windows uses MiKTeX, macOS uses BasicTeX/TeX Live, and
-Linux uses your distribution's packages. These are independent software with
-their own licenses and privacy policies; review them before selecting install.
-Operating-system permission prompts may appear. Downloads can be substantial.
-An unsuccessful dependency installation can be retried from Studio Setup.
-Uninstalling Studio leaves shared drawing tools available to your other programs.
+## Optional third-party drawing tools
 
-MiKTeX: https://miktex.org/copying and https://miktex.org/privacy
-TeX Live: https://tug.org/texlive/copying.html
-Ghostscript: https://www.ghostscript.com/licensing/
-GitHub: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
+The geometry engine and .NET runtime are bundled. Creating figures requires MetaPost/TeX; PDF conversion also requires suitable conversion tools. Studio Setup may install missing tools if you select that option. Such downloads contact independent distributors, may require system permissions, and use those providers' licenses and privacy notices. Shared third-party tools are not necessarily uninstalled when Studio is removed.
 
-## Warranty and mathematical output
+- [MiKTeX license](https://miktex.org/copying) and [privacy](https://miktex.org/privacy)
+- [TeX Live license information](https://tug.org/texlive/copying.html)
+- [Ghostscript licensing](https://www.ghostscript.com/licensing/)
+- [GitHub privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)
 
-The software is provided without warranty, as described in sections 15–17 of
-the AGPL. Review generated statements and proofs before relying on them.
-These notes do not exclude rights that cannot lawfully be excluded.
+## Accuracy, warranty, and legal rights
 
-Report problems at
-https://github.com/nikolaveselinov/Planar-Geometry-Studio/issues.
+Generated statements and proofs may be wrong and should be independently checked before being relied on. The AGPL addresses warranty and liability in sections 15–17. Nothing in these notes excludes consumer rights, data-protection rights, or any other protections that may not legally be waived.
+
+For help, licensing or privacy matters, contact **nikola.veselinov.veselinov@gmail.com**. Report security vulnerabilities privately; see [SECURITY.md](SECURITY.md).
+
+---
+
+Adapted with reference to [General Legal's terms-of-use template](https://github.com/General-Legal/legal-templates/tree/main/templates/terms-of-use) (CC0 1.0). Its proprietary restrictions, account provisions, advertising clauses, and U.S. arbitration agreement do not apply to this AGPL desktop application.

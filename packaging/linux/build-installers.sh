@@ -29,6 +29,7 @@ cp "$root/packaging/linux/planargeometrystudio.desktop" "$payload/usr/share/appl
 cp "$root/packaging/assets/studio.svg" "$payload/usr/share/icons/hicolor/scalable/apps/planargeometrystudio.svg"
 cp "$root/LICENSE" "$payload/usr/share/doc/planargeometrystudio/copyright"
 cp "$root/TERMS.md" "$payload/usr/share/doc/planargeometrystudio/TERMS.md"
+cp "$root/PRIVACY.md" "$payload/usr/share/doc/planargeometrystudio/PRIVACY.md"
 
 deb_arch=amd64
 rpm_arch=x86_64

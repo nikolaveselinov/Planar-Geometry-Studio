@@ -18,7 +18,7 @@ style = '<style>body{font:14px -apple-system,Helvetica;color:#222;padding:24px}h
 pages = {
     'welcome.html': '<h1>Planar Geometry Studio</h1><p>Welcome to Planar Geometry Studio.</p><p>Publisher: <b>Nikola Veselinov</b>.</p><p>This installer places Studio and its bundled geometry engine and .NET runtime in Applications. Launch Studio once installation finishes to set up optional drawing tools.</p><p>Your configurations and runs remain in Documents/Planar Geometry Studio, separately from the application.</p>',
     'conclusion.html': '<h1>Installation complete</h1><p>Open <b>Applications → Planar Geometry Studio</b>. Studio Setup checks your drawing tools and offers automatic installation of BasicTeX, MetaPost, and Ghostscript.</p><p>Updates are checked in the background on each launch. Manage this preference in Help → Studio Setup.</p><p>To uninstall, move Planar Geometry Studio.app to the Trash. Your runs and shared TeX installation are preserved.</p>',
-    'terms.html': '<h1>Terms and setup notes</h1><pre>' + html.escape((root/'TERMS.md').read_text()) + '</pre>',
+    'terms.html': '<h1>Terms and setup notes</h1><pre>' + html.escape((root/'TERMS.md').read_text()) + '</pre><h1>Privacy notice</h1><pre>' + html.escape((root/'PRIVACY.md').read_text()) + '</pre>',
     'license.html': '<h1>GNU AGPL version 3</h1><pre>' + html.escape((root/'LICENSE').read_text()) + '</pre>'
 }
 for name, body in pages.items():
@@ -62,6 +62,7 @@ productbuild --distribution "$work/Distribution.xml" --resources "$work/resource
     --package-path "$work" "$root/artifacts/$stem.pkg"
 cp "$root/artifacts/$stem.pkg" "$work/disk/Install Planar Geometry Studio.pkg"
 cp "$root/TERMS.md" "$work/disk/Terms and setup notes.txt"
+cp "$root/PRIVACY.md" "$work/disk/Privacy notice.txt"
 hdiutil create -volname 'Planar Geometry Studio Setup' -srcfolder "$work/disk" \
     -format UDZO -ov "$root/artifacts/$stem.dmg"
 echo "$root/artifacts/$stem.pkg"

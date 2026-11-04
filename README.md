@@ -91,6 +91,18 @@ To build a release package:
 
 On Windows, use `./publish.ps1 -Runtime win-x64`.
 
+## Privacy and legal notices
+
+Studio keeps configurations, results, and logs on your computer. It has no
+account system or in-app telemetry. Automatic update checks and downloads
+contact GitHub and can be disabled under **Help → Studio Setup**. Optional
+drawing-tool installation contacts independent distributors.
+
+Read the [privacy notice](PRIVACY.md), [license and setup terms](TERMS.md),
+and [security contact instructions](SECURITY.md). These notices are included
+in future application packages, and the privacy notice is accessible in
+Studio Setup. Contact: **nikola.veselinov.veselinov@gmail.com**.
+
 ## License
 
 [GNU AGPL v3.0](LICENSE). The GeoGen engine was created by [Patrik Bak](https://github.com/PatrikBak).
