@@ -51,6 +51,18 @@ public sealed class SetupViewModel : ViewModelBase, IDisposable
         }
     }
 
+    public string Privacy
+    {
+        get
+        {
+            using var stream = typeof(SetupViewModel).Assembly.GetManifestResourceStream("GeoGen.DesktopApp.Privacy.md");
+            if (stream is null)
+                return "Privacy notice is available in PRIVACY.md beside the application.";
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+    }
+
     public bool DownloadUpdates { get => _downloadUpdates; set => SetProperty(ref _downloadUpdates, value); }
     public bool CheckForUpdates { get => _checkForUpdates; set => SetProperty(ref _checkForUpdates, value); }
     public bool DrawingConsent

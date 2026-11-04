@@ -2,8 +2,10 @@
 
 Release assets are built for Windows, Linux, and macOS on x64 and ARM64. Each
 contains Studio, both GeoGen launchers, data/rules, the .NET runtime, the AGPL
-license, and the setup/privacy notes. Matching source is available in the
-GitHub release's source archives and tag.
+license, terms, and privacy notice. Matching source is available in the
+GitHub release's source archives and tag. Before publishing, complete
+[the legal release checklist](../docs/LEGAL_REVIEW.md), especially third-party
+copyright notices and license text in the final binary archives.
 
 ## Windows
 

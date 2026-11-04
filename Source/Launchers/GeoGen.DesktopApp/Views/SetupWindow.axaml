@@ -31,6 +31,7 @@
                         <TextBlock Text="Automatic updates" FontSize="16" FontWeight="SemiBold" />
                         <CheckBox Content="Check for a new stable version every time Studio opens" IsChecked="{Binding CheckForUpdates}" />
                         <CheckBox Content="Download verified updates automatically" IsChecked="{Binding DownloadUpdates}" />
+                        <TextBlock Text="Updates contact GitHub, which receives your IP address and application version. No geometry files are sent. See the Privacy tab for details and your choices." TextWrapping="Wrap" Foreground="#A0A0A0" />
                         <TextBlock Text="Updates download in the background and take effect the next time Studio opens. Choose Restart to update when convenient. Your work stays in place, and no administrator rights are needed. Downloads can be large; turn them off on a metered connection." TextWrapping="Wrap" Foreground="#A0A0A0" />
                         <TextBlock Text="Next: open Drawing tools to enable figure rendering, or start working now." TextWrapping="Wrap" Foreground="#A0A0A0" />
                     </StackPanel>
@@ -60,11 +61,15 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Terms &amp; privacy">
+            <TabItem Header="Terms">
                 <DockPanel Margin="4,18,4,0">
                     <Button DockPanel.Dock="Bottom" Content="Read the complete AGPL license" Command="{Binding LicenseCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" />
                     <TextBox Text="{Binding Terms}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" FontSize="13" />
                 </DockPanel>
+            </TabItem>
+            <TabItem Header="Privacy">
+                <TextBox Margin="4,18,4,0" Text="{Binding Privacy}" IsReadOnly="True"
+                         AcceptsReturn="True" TextWrapping="Wrap" FontSize="13" />
             </TabItem>
         </TabControl>
     </DockPanel>
