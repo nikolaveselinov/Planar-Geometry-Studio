@@ -53,6 +53,20 @@ public sealed class StudioSetupTests
         using var stream = typeof(StudioSettings).Assembly.GetManifestResourceStream("GeoGen.DesktopApp.Terms.md");
         Assert.That(stream, Is.Not.Null);
         using var reader = new StreamReader(stream!);
-        Assert.That(reader.ReadToEnd(), Does.Contain("do not add restrictions"));
+        Assert.That(reader.ReadToEnd(), Does.Contain("do not impose any restrictions in addition to that license"));
+    }
+
+    [Test]
+    public void PrivacyNoticeIsIncludedInExecutable()
+    {
+        using var stream = typeof(StudioSettings).Assembly.GetManifestResourceStream("GeoGen.DesktopApp.Privacy.md");
+        Assert.That(stream, Is.Not.Null);
+        using var reader = new StreamReader(stream!);
+        var privacy = reader.ReadToEnd();
+        Assert.Multiple(() =>
+        {
+            Assert.That(privacy, Does.Contain("GitHub Releases API"));
+            Assert.That(privacy, Does.Contain("Check for a new stable version"));
+        });
     }
 }
